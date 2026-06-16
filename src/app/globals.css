@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Obsidian Bloom — carbon + indigo/violet/celadon ────────── */
+:root, .dark {
+  --bg: #131316;
+  --bg-elev: #17171C;
+  --card: #1C1C22;
+  --card-2: #232329;
+  --border: #2C2C34;
+  --border-soft: #232329;
+  --text: #F3EFF4;
+  --muted: #9B94A1;
+  --accent: #9D4EDD;     /* vivid indigo bloom */
+  --indigo: #8332AC;
+  --violet: #E086D3;
+  --mint: #B8EBD0;       /* celadon = positivo/dinheiro */
+  --peach: #F2D1C9;      /* almond silk = destaque */
+  --danger: #FF6B7A;
+  --warn: #F4B860;
+}
+.light {
+  --bg: #F7F3F8;
+  --bg-elev: #FFFFFF;
+  --card: #FFFFFF;
+  --card-2: #FBF8FC;
+  --border: #ECE4F0;
+  --border-soft: #F2ECF5;
+  --text: #1C1320;
+  --muted: #6E6478;
+  --accent: #8332AC;
+  --indigo: #8332AC;
+  --violet: #C24FB0;
+  --mint: #5FBF96;
+  --peach: #E0A892;
+  --danger: #E23D52;
+  --warn: #D08A2A;
+}
+
+* { border-color: var(--border); }
+html, body { background: var(--bg); color: var(--text); }
+body { -webkit-font-smoothing: antialiased; font-feature-settings: "ss01", "cv01"; }
+
+/* Grão sutil */
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+#__app { position: relative; z-index: 1; }
+
+.card {
+  position: relative;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--card) 92%, transparent), var(--card));
+  border: 1px solid var(--border);
+  border-radius: 1.25rem;
+  box-shadow: 0 1px 0 0 rgba(255,255,255,0.03) inset, 0 16px 40px -24px rgba(0,0,0,0.7);
+}
+.light .card { box-shadow: 0 1px 2px rgba(28,19,32,0.04), 0 8px 24px -16px rgba(131,50,172,0.14); }
+
+.hairline { border: 1px solid var(--border); }
+.text-muted { color: var(--muted); }
+
+.text-gradient {
+  background: linear-gradient(100deg, var(--accent), var(--violet));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.glow-num { text-shadow: 0 0 30px rgba(224,134,211,0.4); }
+
+.orb { position: absolute; border-radius: 9999px; filter: blur(48px); opacity: 0.5; pointer-events: none; }
+.num { font-family: 'Space Grotesk', Manrope, sans-serif; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+
+::-webkit-scrollbar { width: 9px; height: 9px; }
+::-webkit-scrollbar-thumb { background: #34343d; border-radius: 9999px; }
+::-webkit-scrollbar-track { background: transparent; }
+.light ::-webkit-scrollbar-thumb { background: #d8cce0; }
