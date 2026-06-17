@@ -48,19 +48,19 @@ https://bqalbkmpxpfvyihkpniv.supabase.co/auth/v1/callback
 3. Crie um Client Secret. Cole **Application (client) ID** e **secret** no provider **Azure** do Supabase.
 4. (Opcional) Defina o Azure Tenant URL para restringir a uma organização.
 
-### Apple
-1. Requer **Apple Developer Program** (US$ 99/ano).
-2. Crie um App ID + Services ID, habilite "Sign in with Apple".
-3. Return URL = a callback acima. Gere a chave (.p8) e o client secret (JWT).
-4. Cole **Services ID** e **secret** no provider Apple do Supabase.
+### Discord (gratuito)
+1. https://discord.com/developers/applications → **New Application**.
+2. Em **OAuth2** → Redirects → adicione a callback acima.
+3. Copie o **Client ID** e gere o **Client Secret** (OAuth2 → Reset Secret).
+4. Cole ambos no provider **Discord** do Supabase. Ative.
 
-> Apple é o mais trabalhoso. Sugestão: comece por Google e Microsoft e adicione Apple depois.
+> Provedores ativos no Lumina: Google, Microsoft (Azure) e Discord — todos gratuitos. Apple fica para depois (exige conta paga).
 
 ---
 
 ## 4. Como o fluxo funciona
 
-1. `/login` — botões Google / Microsoft / Apple → `signInWithOAuth`.
+1. `/login` — botões Google / Microsoft / Discord → `signInWithOAuth`.
 2. Provedor → `/auth/callback` → troca código pela sessão (cookies).
 3. `middleware.ts` protege todas as rotas:
    - sem sessão → `/login`
