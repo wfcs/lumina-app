@@ -1,17 +1,14 @@
 import { NextResponse } from "next/server";
-import { createConnectToken } from "@/server/pluggy";
+import { createConnectToken, pluggyConfigured } from "@/server/pluggy";
 
-// GET /api/pluggy/connect-token
-// Retorna um token para inicializar o Pluggy Connect Widget no cliente.
-// Em modo protótipo (sem credenciais), devolve um token mock.
 export async function GET() {
+  if (!pluggyConfigured()) {
+    return NextResponse.json({ mode: "mock", token: null, note: "Pluggy sem credenciais (.env)" });
+  }
   try {
     const token = await createConnectToken();
-    return NextResponse.json({ token, mode: "live" });
+    return NextResponse.json({ mode: "live", token });
   } catch (e) {
-    return NextResponse.json(
-      { token: "mock-connect-token", mode: "mock", note: String(e) },
-      { status: 200 }
-    );
+    return NextResponse.json({ mode: "error", token: null, note: String(e) }, { status: 500 });
   }
 }
