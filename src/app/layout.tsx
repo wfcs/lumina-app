@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "@/components/providers";
-import { Sidebar } from "@/components/layout/sidebar";
-import { Header } from "@/components/layout/header";
+import { AuthShell } from "@/components/auth-shell";
 
 export const metadata: Metadata = {
   title: "Lumina — Clareza Financeira",
@@ -22,13 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="font-sans">
         <Providers>
-          <div id="__app" className="flex min-h-screen">
-            <Sidebar />
-            <div className="flex-1 flex flex-col md:ml-[252px] min-w-0">
-              <Header />
-              <main className="flex-1 px-4 md:px-8 py-6 max-w-[1440px] w-full mx-auto">{children}</main>
-            </div>
-          </div>
+          <AuthShell>{children}</AuthShell>
         </Providers>
       </body>
     </html>
