@@ -59,7 +59,7 @@ export async function updateSession(request: NextRequest) {
   }
 
   // 4) Tudo ok → não deixa voltar para telas de entrada
-  if (isLogin || path === "/onboarding" || path.startsWith("/connect")) {
+  if (isLogin || path === "/onboarding") {
     return redirect("/");
   }
 

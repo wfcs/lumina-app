@@ -20,7 +20,12 @@ async function call(path: string, body: Record<string, unknown> = {}): Promise<a
   });
   const json = await res.json().catch(() => null);
   if (!res.ok || !json?.ok) {
-    throw new Error(`Banco MCP ${path}: ${res.status} ${json?.error ?? json?.message ?? ""}`.trim());
+    const err = json?.error;
+    if (err?.code === "not_connected") {
+      throw new Error("NOT_CONNECTED: conecte um banco primeiro pelo botão \"Conectar banco\".");
+    }
+    const detail = err?.message ?? (typeof json === "object" ? JSON.stringify(json) : String(json));
+    throw new Error(`Banco MCP ${path}: ${res.status} ${detail ?? ""}`.trim().slice(0, 300));
   }
   return json.result;
 }
@@ -35,8 +40,22 @@ export async function listConnections() {
   return { connections: arr(r, "connections"), addUrl: r?.add_connection_url ?? null };
 }
 export async function getAddConnectionUrl(): Promise<string | null> {
-  const r = await call("/connections/list").catch(() => null);
-  return r?.add_connection_url ?? null;
+  // O connect_url vem no result (já conectado) OU dentro do erro 409 not_connected.
+  const res = await fetch(`${OF}/connectors/search`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.BANCOMCP_API_KEY ?? ""}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ keywords: ["nubank", "itau", "bradesco", "santander", "inter", "c6", "caixa", "bb"] }),
+    cache: "no-store",
+  });
+  const json: any = await res.json().catch(() => null);
+  const r = json?.result;
+  if (r?.connect_url_base) return r.connect_url_base as string;
+  if (Array.isArray(r?.banks) && r.banks[0]?.connect_url) return r.banks[0].connect_url as string;
+  if (json?.error?.connect_url) return json.error.connect_url as string; // 409 not_connected
+  return null;
 }
 export async function listAccounts(item?: string) {
   const r = await call("/accounts/list", item ? { item } : {});
@@ -45,6 +64,10 @@ export async function listAccounts(item?: string) {
 export async function listTransactions(accountId: string, from?: string) {
   const r = await call("/transactions/list", { account_id: accountId, from, page_size: 500 });
   return arr(r, "transactions", "results");
+}
+
+export async function disconnectBank(item: string) {
+  return call("/connections/disconnect", { item });
 }
 
 function num(v: any): number { const n = Number(v); return Number.isFinite(n) ? n : 0; }

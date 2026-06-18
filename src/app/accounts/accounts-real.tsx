@@ -1,4 +1,6 @@
 "use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Card, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -6,7 +8,7 @@ import { Money } from "@/components/ui/money";
 import { PageHeader } from "@/components/ui/page-header";
 import { brl } from "@/lib/format";
 import type { DbAccount, DbConnection } from "@/lib/data";
-import { Plus, Landmark } from "lucide-react";
+import { Plus, Landmark, Trash2, Loader2 } from "lucide-react";
 
 const statusMap: Record<string, { tone: "positive" | "warn" | "danger"; label: string }> = {
   updated: { tone: "positive", label: "Atualizado" },
@@ -20,11 +22,33 @@ function Logo({ url, size = 28 }: { url: string | null; size?: number }) {
 }
 
 export function AccountsReal({ accounts, connections }: { accounts: DbAccount[]; connections: DbConnection[] }) {
+  const router = useRouter();
+  const [busy, setBusy] = useState<string | null>(null);
   const connById = new Map(connections.map((c) => [c.id, c]));
   const cards = accounts.filter((a) => (a.type ?? "").toUpperCase() === "CREDIT");
   const banks = accounts.filter((a) => (a.type ?? "").toUpperCase() !== "CREDIT");
   const totalDebt = cards.reduce((s, c) => s + Math.abs(c.balance), 0);
   const totalBalance = banks.reduce((s, b) => s + b.balance, 0);
+
+  async function disconnect(conn: DbConnection) {
+    const n = accounts.filter((a) => a.connection_id === conn.id).length;
+    if (!confirm(`Desconectar "${conn.institution_name ?? "este banco"}"? Isso revoga o consentimento e remove ${n} conta(s) e suas transações do Lumina.`)) return;
+    setBusy(conn.id);
+    try {
+      const res = await fetch("/api/connections/disconnect", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ connectionId: conn.id }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Falha ao desconectar.");
+      router.refresh();
+    } catch (e: any) {
+      alert(e.message ?? "Erro ao desconectar.");
+    } finally {
+      setBusy(null);
+    }
+  }
 
   return (
     <div>
@@ -81,6 +105,14 @@ export function AccountsReal({ accounts, connections }: { accounts: DbAccount[];
                   <div className="text-xs text-muted">{n} conta(s) · sincronizado {cn.last_sync_at ? new Date(cn.last_sync_at).toLocaleString("pt-BR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "—"}</div>
                 </div>
                 <Badge tone={st.tone}>{st.label}</Badge>
+                <button
+                  onClick={() => disconnect(cn)}
+                  disabled={busy === cn.id}
+                  title="Desconectar e remover dados"
+                  className="grid place-items-center h-8 w-8 rounded-lg border border-[var(--border)] text-muted hover:text-danger hover:border-danger/40 transition-colors disabled:opacity-50"
+                >
+                  {busy === cn.id ? <Loader2 size={15} className="animate-spin" /> : <Trash2 size={15} />}
+                </button>
               </div>
             );
           })}
