@@ -15,19 +15,24 @@ export default function ConnectPage() {
   const router = useRouter();
   const [mode, setMode] = useState<Mode>("loading");
   const [token, setToken] = useState<string | null>(null);
+  const [note, setNote] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  function loadToken() {
+    setMode("loading");
+    setNote(null);
     fetch("/api/pluggy/connect-token")
       .then((r) => r.json())
       .then((d) => {
         setMode(d.mode === "live" ? "live" : d.mode === "mock" ? "mock" : "error");
         setToken(d.token ?? null);
+        setNote(d.note ?? null);
       })
-      .catch(() => setMode("error"));
-  }, []);
+      .catch((e) => { setMode("error"); setNote(String(e)); });
+  }
+  useEffect(() => { loadToken(); }, []);
 
   async function handleSuccess(itemData: any) {
     setOpen(false);
@@ -85,12 +90,20 @@ export default function ConnectPage() {
               {mode === "mock" && (
                 <div className="flex items-start gap-2 text-left text-sm rounded-lg border border-warn/30 bg-warn/10 px-3 py-2">
                   <AlertCircle size={16} className="text-warn mt-0.5 shrink-0" />
-                  <span>Pluggy ainda não configurado no servidor. Defina <code>PLUGGY_CLIENT_ID</code> e <code>PLUGGY_CLIENT_SECRET</code> no ambiente.</span>
+                  <span>Pluggy ainda não configurado no servidor. Defina <code>PLUGGY_CLIENT_ID</code> e <code>PLUGGY_CLIENT_SECRET</code> e reinicie o servidor.</span>
                 </div>
               )}
               {mode === "error" && (
-                <div className="flex items-center gap-2 text-sm text-danger rounded-lg border border-danger/30 bg-danger/10 px-3 py-2">
-                  <AlertCircle size={16} /> Não foi possível iniciar a conexão. Tente novamente.
+                <div className="space-y-2">
+                  <div className="flex items-center justify-center gap-2 text-sm text-danger rounded-lg border border-danger/30 bg-danger/10 px-3 py-2">
+                    <AlertCircle size={16} /> Não foi possível iniciar a conexão.
+                  </div>
+                  {note && (
+                    <p className="text-[11px] text-muted break-words rounded-lg border border-[var(--border)] bg-[var(--card-2)] px-3 py-2 text-left">
+                      Detalhe: {note}
+                    </p>
+                  )}
+                  <button onClick={loadToken} className="text-xs text-[var(--accent)] font-semibold">Tentar novamente</button>
                 </div>
               )}
               {mode === "loading" && (

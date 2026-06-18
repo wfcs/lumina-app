@@ -6,7 +6,8 @@ import {
 } from "@/server/pluggy";
 
 // POST /api/pluggy/sync  { itemId }
-// Busca contas + transações do item na Pluggy e grava no Supabase (RLS por usuário).
+// Resiliente: salva conexão + contas mesmo que as transações ainda estejam
+// sendo coletadas pela Pluggy (410). Transações são sincronizadas depois.
 export async function POST(request: Request) {
   if (!pluggyConfigured()) {
     return NextResponse.json({ error: "Pluggy não configurado no servidor." }, { status: 400 });
@@ -22,8 +23,9 @@ export async function POST(request: Request) {
   try {
     const apiKey = await getApiKey();
     const item = await getItem(itemId, apiKey);
+    const itemReady = item?.status === "UPDATED";
 
-    // 1) conexão
+    // 1) conexão (se ainda atualizando, marca como instável p/ re-sync depois)
     const { data: conn, error: connErr } = await supabase
       .from("connections")
       .upsert(
@@ -32,7 +34,7 @@ export async function POST(request: Request) {
           pluggy_item_id: itemId,
           institution_name: item?.connector?.name ?? null,
           institution_image: item?.connector?.imageUrl ?? null,
-          status: mapStatus(item?.status),
+          status: itemReady ? mapStatus(item?.status) : "unstable",
           last_sync_at: new Date().toISOString(),
         },
         { onConflict: "pluggy_item_id" }
@@ -44,6 +46,7 @@ export async function POST(request: Request) {
     // 2) contas
     const accounts = await getAccounts(itemId, apiKey);
     let txCount = 0;
+    let txPending = false;
 
     for (const acc of accounts) {
       const { data: savedAcc, error: accErr } = await supabase
@@ -67,29 +70,39 @@ export async function POST(request: Request) {
         .single();
       if (accErr) throw accErr;
 
-      // 3) transações da conta
-      const txs = await getTransactions(acc.id, apiKey);
-      if (txs.length) {
-        const rows = txs.map((t) => ({
-          user_id: user.id,
-          account_id: savedAcc.id,
-          pluggy_transaction_id: t.id,
-          description: t.description ?? t.descriptionRaw ?? "",
-          amount: signedAmount(t),
-          type: t.type ?? null,
-          date: (t.date ?? "").slice(0, 10),
-          category: t.category ?? null,
-          currency: t.currencyCode ?? "BRL",
-        }));
-        const { error: txErr } = await supabase
-          .from("transactions")
-          .upsert(rows, { onConflict: "pluggy_transaction_id" });
-        if (txErr) throw txErr;
-        txCount += rows.length;
+      // 3) transações — não fatal: se ainda coletando (410) ou erro, pula
+      try {
+        const txs = await getTransactions(acc.id, apiKey);
+        if (txs.length) {
+          const rows = txs.map((t) => ({
+            user_id: user.id,
+            account_id: savedAcc.id,
+            pluggy_transaction_id: t.id,
+            description: t.description ?? t.descriptionRaw ?? "",
+            amount: signedAmount(t),
+            type: t.type ?? null,
+            date: (t.date ?? "").slice(0, 10),
+            category: t.category ?? null,
+            currency: t.currencyCode ?? "BRL",
+          }));
+          const { error: txErr } = await supabase
+            .from("transactions")
+            .upsert(rows, { onConflict: "pluggy_transaction_id" });
+          if (txErr) throw txErr;
+          txCount += rows.length;
+        }
+      } catch (txe) {
+        // transações ainda não disponíveis para esta conta — segue o fluxo
+        txPending = true;
       }
     }
 
-    return NextResponse.json({ ok: true, accounts: accounts.length, transactions: txCount });
+    return NextResponse.json({
+      ok: true,
+      accounts: accounts.length,
+      transactions: txCount,
+      transactionsPending: txPending || !itemReady,
+    });
   } catch (e) {
     return NextResponse.json({ error: String(e) }, { status: 500 });
   }
