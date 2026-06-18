@@ -1,4 +1,5 @@
 "use client";
+import { ExampleBanner } from "@/components/ui/example-banner";
 import { useState } from "react";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardTitle } from "@/components/ui/card";
@@ -20,6 +21,7 @@ export default function RecurringPage() {
 
   return (
     <div>
+      <ExampleBanner />
       <PageHeader
         title="Recorrentes"
         subtitle="Contas fixas e parcelas detectadas automaticamente"

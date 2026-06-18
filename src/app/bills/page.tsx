@@ -1,4 +1,5 @@
 "use client";
+import { ExampleBanner } from "@/components/ui/example-banner";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +20,7 @@ export default function BillsPage() {
 
   return (
     <div>
+      <ExampleBanner />
       <PageHeader title="Faturas" subtitle="Total consolidado a pagar nos seus cartões" />
 
       <Card className="mb-5">

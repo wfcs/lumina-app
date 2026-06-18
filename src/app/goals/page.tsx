@@ -1,4 +1,5 @@
 "use client";
+import { ExampleBanner } from "@/components/ui/example-banner";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -11,6 +12,7 @@ export default function GoalsPage() {
   const today = new Date("2026-06-16");
   return (
     <div>
+      <ExampleBanner />
       <PageHeader title="Metas" subtitle="Acompanhe seus objetivos financeiros" action={<button className="inline-flex items-center gap-1.5 bg-brand text-white px-3 py-2 rounded-lg text-sm font-medium"><Plus size={16} /> Nova Meta</button>} />
 
       {goals.length === 0 ? (

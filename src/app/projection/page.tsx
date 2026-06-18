@@ -1,4 +1,5 @@
 "use client";
+import { ExampleBanner } from "@/components/ui/example-banner";
 import { useState } from "react";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardTitle } from "@/components/ui/card";
@@ -20,6 +21,7 @@ export default function ProjectionPage() {
 
   return (
     <div>
+      <ExampleBanner />
       <PageHeader title="Projeção" subtitle="Para onde seu saldo está indo nos próximos meses" action={
         <div className="inline-flex rounded-lg border border-[var(--border)] p-0.5">
           {horizons.map((x) => <button key={x} onClick={() => setH(x)} className={`px-3 py-1.5 rounded-md text-sm font-medium ${x === h ? "bg-brand text-white" : "text-muted"}`}>{x}</button>)}

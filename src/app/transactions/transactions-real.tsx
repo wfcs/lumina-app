@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Card } from "@/components/ui/card";
 import { Money } from "@/components/ui/money";
 import { shortDate } from "@/lib/format";
+import { categoryPtBr } from "@/lib/categories-ptbr";
 import type { DbTransaction } from "@/lib/data";
 import { Search } from "lucide-react";
 
@@ -46,10 +47,10 @@ export function TransactionsReal({ transactions }: { transactions: DbTransaction
                 <tr key={t.id} className="border-b border-[var(--border)] last:border-0 hover:bg-white/[0.02]">
                   <td className="p-3">
                     <div className="font-medium">{t.description || "—"}</div>
-                    <div className="text-xs text-muted sm:hidden">{t.category ?? "Sem categoria"} · {shortDate(t.date)}</div>
+                    <div className="text-xs text-muted sm:hidden">{categoryPtBr(t.category)} · {shortDate(t.date)}</div>
                   </td>
                   <td className="p-3 hidden sm:table-cell">
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-white/[0.05] text-muted">{t.category ?? "Sem categoria"}</span>
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-white/[0.05] text-muted">{categoryPtBr(t.category)}</span>
                   </td>
                   <td className="p-3 hidden sm:table-cell text-muted">{shortDate(t.date)}</td>
                   <td className="p-3 text-right"><Money value={t.amount} colorize className="font-semibold" /></td>
