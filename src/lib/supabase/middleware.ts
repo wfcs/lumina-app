@@ -54,12 +54,12 @@ export async function updateSession(request: NextRequest) {
     .from("connections").select("id", { count: "exact", head: true });
   const connected = (count ?? 0) > 0;
   if (!connected) {
-    if (path === "/connect" || isAuthFlow) return response;
+    if (path.startsWith("/connect") || isAuthFlow) return response;
     return redirect("/connect");
   }
 
   // 4) Tudo ok → não deixa voltar para telas de entrada
-  if (isLogin || path === "/onboarding" || path === "/connect") {
+  if (isLogin || path === "/onboarding" || path.startsWith("/connect")) {
     return redirect("/");
   }
 

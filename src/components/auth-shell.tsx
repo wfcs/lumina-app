@@ -6,7 +6,7 @@ import { FeedbackWidget } from "@/components/feedback-widget";
 
 export function AuthShell({ children }: { children: React.ReactNode }) {
   const path = usePathname();
-  const bare = path === "/login" || path === "/onboarding" || path === "/connect" || path.startsWith("/auth");
+  const bare = path === "/login" || path === "/onboarding" || path.startsWith("/connect") || path.startsWith("/auth");
 
   if (bare) return <div id="__app">{children}</div>;
 
