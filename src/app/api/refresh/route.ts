@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { bancoMcpConfigured, syncBancoMcp } from "@/server/bancomcp";
 import { pluggyConfigured } from "@/server/pluggy";
 import { resyncUser } from "@/server/sync";
+import { canUseOpenFinance } from "@/lib/access";
 
 export async function POST() {
   const supabase = createClient();
@@ -11,7 +12,7 @@ export async function POST() {
 
   let accounts = 0, transactions = 0;
   const errors: string[] = [];
-  if (bancoMcpConfigured()) {
+  if (bancoMcpConfigured() && canUseOpenFinance(user.email)) {
     try { const r = await syncBancoMcp(supabase, user.id); accounts += r.accounts; transactions += r.transactions; }
     catch (e) { errors.push(`Banco MCP: ${e}`); }
   }

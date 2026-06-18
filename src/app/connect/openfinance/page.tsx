@@ -1,7 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Landmark, ShieldCheck, AlertCircle, Loader2, ExternalLink, ArrowLeft } from "lucide-react";
+import { ShieldCheck, AlertCircle, Loader2, ExternalLink, ArrowLeft } from "lucide-react";
+import { LuminaMark } from "@/components/ui/lumina-mark";
 
 type Mode = "loading" | "ready" | "notconfigured" | "error";
 
@@ -46,9 +47,7 @@ export default function OpenFinancePage() {
       <div className="relative w-full max-w-md">
         <a href="/connect" className="inline-flex items-center gap-1 text-xs text-muted hover:text-[var(--text)] mb-3"><ArrowLeft size={13} /> Voltar para as opções</a>
         <div className="card p-6 text-center">
-          <div className="h-12 w-12 rounded-2xl grid place-items-center mx-auto mb-4 shadow-glow-violet" style={{ background: "linear-gradient(135deg, #8332AC, #E086D3)" }}>
-            <Landmark size={22} className="text-white" />
-          </div>
+          <div className="flex justify-center mb-4"><LuminaMark size={48} /></div>
           <h1 className="font-display text-xl font-bold">Conectar via Open Finance</h1>
           <p className="text-sm text-muted mt-1 mb-6">Autorize no site do seu banco (regulado pelo BACEN). O Lumina só lê — nunca move dinheiro.</p>
 

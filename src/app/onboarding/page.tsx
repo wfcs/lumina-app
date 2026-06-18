@@ -4,6 +4,7 @@ import { useFormState, useFormStatus } from "react-dom";
 import { saveTaxId, type OnboardState } from "./actions";
 import { maskTaxId, onlyDigits, isValidTaxId } from "@/lib/tax-id";
 import { ShieldCheck, AlertCircle } from "lucide-react";
+import { LuminaMark } from "@/components/ui/lumina-mark";
 
 export default function OnboardingPage() {
   const [value, setValue] = useState("");
@@ -18,10 +19,7 @@ export default function OnboardingPage() {
       <div className="orb h-72 w-72 -top-10 right-0" style={{ background: "radial-gradient(circle, #8332AC, transparent 70%)" }} />
       <div className="relative w-full max-w-md">
         <div className="card p-6">
-          <div className="h-11 w-11 rounded-2xl grid place-items-center mb-4 shadow-glow-violet"
-               style={{ background: "linear-gradient(135deg, #8332AC, #E086D3)" }}>
-            <ShieldCheck size={20} className="text-white" />
-          </div>
+          <LuminaMark size={44} className="mb-4" />
           <h1 className="font-display text-xl font-bold">Confirme sua identidade</h1>
           <p className="text-sm text-muted mt-1 mb-6">
             Para continuar, informe um <b>CPF</b> ou <b>CNPJ</b> válido. Ele identifica sua conta de forma única no Lumina.

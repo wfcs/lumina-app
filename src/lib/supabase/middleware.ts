@@ -1,5 +1,6 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { isAdmin, hasAppAccess } from "@/lib/access";
 
 type CookieToSet = { name: string; value: string; options?: CookieOptions };
 
@@ -11,15 +12,11 @@ export async function updateSession(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
+        getAll() { return request.cookies.getAll(); },
         setAll(cookiesToSet: CookieToSet[]) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
           response = NextResponse.next({ request });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
-          );
+          cookiesToSet.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
         },
       },
     }
@@ -30,38 +27,42 @@ export async function updateSession(request: NextRequest) {
   const isAuthFlow = path.startsWith("/auth");
   const isLogin = path === "/login";
   const redirect = (to: string) => {
-    const url = request.nextUrl.clone();
-    url.pathname = to;
-    return NextResponse.redirect(url);
+    const url = request.nextUrl.clone(); url.pathname = to; return NextResponse.redirect(url);
   };
 
-  // 1) Sem sessão
   if (!user) {
     if (isLogin || isAuthFlow) return response;
     return redirect("/login");
   }
 
-  // 2) Sem CPF/CNPJ
   const { data: profile } = await supabase
-    .from("profiles").select("onboarded").eq("id", user.id).single();
+    .from("profiles").select("onboarded, plan, trial_ends_at").eq("id", user.id).single();
+
+  // 1) CPF/CNPJ
   if (!(profile?.onboarded ?? false)) {
     if (path === "/onboarding" || isAuthFlow) return response;
     return redirect("/onboarding");
   }
 
-  // 3) Sem banco conectado (Open Finance)
+  // 2) Trial/plano (admins isentos)
+  const admin = isAdmin(user.email);
+  const access = admin || hasAppAccess(profile ?? {});
+  if (!access) {
+    if (path === "/upgrade" || isAuthFlow) return response;
+    return redirect("/upgrade");
+  }
+  if (path === "/upgrade") return redirect("/");
+
+  // 3) Fonte de dados conectada
   const { count } = await supabase
     .from("connections").select("id", { count: "exact", head: true });
-  const connected = (count ?? 0) > 0;
-  if (!connected) {
+  if ((count ?? 0) === 0) {
     if (path.startsWith("/connect") || isAuthFlow) return response;
     return redirect("/connect");
   }
 
-  // 4) Tudo ok → não deixa voltar para telas de entrada
-  if (isLogin || path === "/onboarding") {
-    return redirect("/");
-  }
+  // 4) Limpeza
+  if (isLogin || path === "/onboarding") return redirect("/");
 
   return response;
 }
