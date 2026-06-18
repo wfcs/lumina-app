@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { LuminaMark } from "@/components/ui/lumina-mark";
 
 type Provider = "google" | "azure" | "discord";
 
@@ -33,8 +34,7 @@ export default function LoginPage() {
 
       <div className="relative w-full max-w-sm">
         <div className="flex items-center gap-3 mb-8 justify-center">
-          <div className="h-11 w-11 rounded-2xl grid place-items-center font-display font-bold text-white text-xl shadow-glow-violet"
-               style={{ background: "linear-gradient(135deg, #8332AC, #E086D3)" }}>L</div>
+          <LuminaMark size={46} />
           <div>
             <div className="font-display font-bold text-2xl tracking-tight">Lumina</div>
             <div className="text-xs uppercase tracking-[0.2em] text-muted">Clareza financeira</div>

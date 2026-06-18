@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useUI } from "@/lib/store";
 import { cn } from "@/lib/utils";
+import { LuminaMark } from "@/components/ui/lumina-mark";
 import {
   LayoutDashboard, ArrowLeftRight, Repeat, TrendingUp, Wallet,
   Receipt, Tags, Target, LineChart, PiggyBank, X, LogOut,
@@ -35,10 +36,7 @@ export function Sidebar() {
         )}
       >
         <div className="h-[72px] flex items-center gap-3 px-6">
-          <div className="relative h-9 w-9 rounded-xl grid place-items-center font-display font-bold text-white shadow-glow-mint"
-               style={{ background: "linear-gradient(135deg, var(--accent), var(--mint))" }}>
-            L
-          </div>
+<LuminaMark size={38} />
           <div className="leading-none">
             <div className="font-display font-bold text-lg tracking-tight">Lumina</div>
             <div className="text-[10px] uppercase tracking-[0.2em] text-muted mt-1">Clareza</div>
