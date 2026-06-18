@@ -20,7 +20,7 @@ export function Header() {
     setRefreshing(true);
     setMsg(null);
     try {
-      const res = await fetch("/api/pluggy/resync", { method: "POST" });
+      const res = await fetch("/api/refresh", { method: "POST" });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Falha ao atualizar.");
       setMsg(

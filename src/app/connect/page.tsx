@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Landmark, FileUp, ArrowRight, ShieldCheck, Clock } from "lucide-react";
+import { Landmark, FileUp, ArrowRight, ShieldCheck } from "lucide-react";
 
 export default function ConnectChoicePage() {
   return (
@@ -23,9 +23,9 @@ export default function ConnectChoicePage() {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <h3 className="font-semibold">Conectar via Open Finance</h3>
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold border border-warn/30 bg-warn/10 text-warn"><Clock size={10} /> Em desenvolvimento</span>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold border border-[var(--accent)]/30 bg-[var(--accent)]/10 text-[var(--accent)]">Disponível</span>
               </div>
-              <p className="text-sm text-muted mt-0.5">Conexão automática com o banco, regulada pelo Banco Central. Sincroniza sozinho.</p>
+              <p className="text-sm text-muted mt-0.5">Conexão automática com o banco (via Banco MCP), regulada pelo Banco Central.</p>
             </div>
             <ArrowRight size={18} className="text-muted group-hover:text-[var(--accent)] shrink-0" />
           </Link>
