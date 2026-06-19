@@ -9,7 +9,6 @@
 
 **Lumina** é um app web de gestão financeira pessoal integrado ao **Open Finance brasileiro** (via Pluggy), que consolida contas de múltiplas instituições em uma única interface para oferecer **clareza financeira**.
 
-> App em produção (preview): https://lumina-app-chi-olive.vercel.app
 
 ---
 
