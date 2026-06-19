@@ -8,15 +8,33 @@ import { categoryPtBr } from "@/lib/categories-ptbr";
 import type { DbTransaction } from "@/lib/data";
 import { Search } from "lucide-react";
 
+const MESES = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+const selectCls = "h-9 px-3 rounded-xl border border-[var(--border)] bg-[var(--card-2)] text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]";
+
 export function TransactionsReal({ transactions }: { transactions: DbTransaction[] }) {
+  const years = useMemo(
+    () => Array.from(new Set(transactions.map((t) => t.date.slice(0, 4)))).sort((a, b) => b.localeCompare(a)),
+    [transactions]
+  );
+  const categories = useMemo(
+    () => Array.from(new Set(transactions.map((t) => categoryPtBr(t.category)))).sort((a, b) => a.localeCompare(b)),
+    [transactions]
+  );
+
+  const [year, setYear] = useState(years[0] ?? String(new Date().getFullYear()));
+  const [month, setMonth] = useState("all");
+  const [cat, setCat] = useState("all");
   const [q, setQ] = useState("");
 
   const rows = useMemo(
     () =>
       transactions
+        .filter((t) => t.date.slice(0, 4) === year)
+        .filter((t) => month === "all" || t.date.slice(5, 7) === month)
+        .filter((t) => cat === "all" || categoryPtBr(t.category) === cat)
         .filter((t) => (t.description ?? "").toLowerCase().includes(q.toLowerCase()))
         .sort((a, b) => b.date.localeCompare(a.date)),
-    [transactions, q]
+    [transactions, year, month, cat, q]
   );
 
   const income = rows.filter((t) => t.amount > 0).reduce((s, t) => s + t.amount, 0);
@@ -24,11 +42,29 @@ export function TransactionsReal({ transactions }: { transactions: DbTransaction
 
   return (
     <div>
-      <PageHeader title="Transações" subtitle="Movimentações reais coletadas via Open Finance" />
+      <PageHeader title="Transações" subtitle="Movimentações reais coletadas via Open Finance / importação" />
 
-      <div className="relative mb-3 max-w-md">
-        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
-        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar transações..." className="w-full pl-9 pr-3 py-2 rounded-xl border border-[var(--border)] bg-[var(--card)] text-sm outline-none focus:border-[var(--accent)]" />
+      {/* Filtros */}
+      <div className="flex flex-wrap items-center gap-2 mb-3">
+        <select value={year} onChange={(e) => setYear(e.target.value)} className={selectCls} aria-label="Ano">
+          {years.length === 0 && <option value={year}>{year}</option>}
+          {years.map((y) => <option key={y} value={y}>{y}</option>)}
+        </select>
+
+        <select value={month} onChange={(e) => setMonth(e.target.value)} className={selectCls} aria-label="Mês">
+          <option value="all">Todos os meses</option>
+          {MESES.map((m, i) => <option key={m} value={String(i + 1).padStart(2, "0")}>{m}</option>)}
+        </select>
+
+        <select value={cat} onChange={(e) => setCat(e.target.value)} className={selectCls} aria-label="Categoria">
+          <option value="all">Todas as categorias</option>
+          {categories.map((c) => <option key={c} value={c}>{c}</option>)}
+        </select>
+
+        <div className="relative flex-1 min-w-[160px] max-w-xs">
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar..." className="w-full pl-9 pr-3 h-9 rounded-xl border border-[var(--border)] bg-[var(--card)] text-sm outline-none focus:border-[var(--accent)]" />
+        </div>
       </div>
 
       <Card className="p-0 overflow-hidden">
@@ -43,6 +79,9 @@ export function TransactionsReal({ transactions }: { transactions: DbTransaction
               </tr>
             </thead>
             <tbody>
+              {rows.length === 0 && (
+                <tr><td colSpan={4} className="p-6 text-center text-muted">Nenhuma transação para este filtro.</td></tr>
+              )}
               {rows.map((t) => (
                 <tr key={t.id} className="border-b border-[var(--border)] last:border-0 hover:bg-white/[0.02]">
                   <td className="p-3">

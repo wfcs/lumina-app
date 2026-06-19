@@ -1,179 +1,147 @@
-# Lumina — Clareza Financeira com Open Finance
+# Lumina — Clareza Financeira
 
-![Version](https://img.shields.io/badge/version-0.1.0-8332AC.svg)
 ![Next.js](https://img.shields.io/badge/Next.js-14-black.svg)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6.svg)
-![Supabase](https://img.shields.io/badge/Supabase-Auth%20%2B%20Postgres-3ECF8E.svg)
+![Supabase](https://img.shields.io/badge/Supabase-Auth%20%2B%20Postgres%20%2B%20RLS-3ECF8E.svg)
 ![Deploy](https://img.shields.io/badge/deploy-Vercel-black.svg)
-![Status](https://img.shields.io/badge/status-em%20desenvolvimento-F4B860.svg)
+![Status](https://img.shields.io/badge/status-em%20desenvolvimento-8332AC.svg)
 
-**Lumina** é um app web de gestão financeira pessoal integrado ao **Open Finance brasileiro** (via Pluggy), que consolida contas de múltiplas instituições em uma única interface para oferecer **clareza financeira**.
+**Lumina** é um app web de gestão financeira pessoal que dá **clareza financeira** consolidando dados bancários do usuário — via **importação de extrato (OFX/CSV)** ou **Open Finance**. Visual premium "Obsidian Bloom" (roxo/violeta/menta sobre carbono).
 
+> Preview: https://lumina-app-chi-olive.vercel.app
 
 ---
 
 ## Sumário
-
 - [Funcionalidades](#funcionalidades)
 - [Stack](#stack)
 - [Fluxo de acesso](#fluxo-de-acesso)
 - [Telas](#telas)
-- [Design System](#design-system)
+- [Fontes de dados](#fontes-de-dados)
 - [Banco de dados](#banco-de-dados-supabase)
-- [Início rápido](#início-rápido)
 - [Variáveis de ambiente](#variáveis-de-ambiente)
+- [Início rápido](#início-rápido)
 - [Deploy](#deploy)
 - [Roadmap](#roadmap)
-- [Licença](#licença)
 
 ---
 
 ## Funcionalidades
 
-### Autenticação e identidade
+### Identidade & acesso
 - Login social: **Google, Microsoft (Azure) e Discord** (Supabase Auth)
-- **CPF/CNPJ obrigatório** após o login, com validação de dígitos verificadores (cliente + Postgres)
-- CPF/CNPJ **único por conta** (não permite duas contas com o mesmo documento) e imutável após cadastro
-- Proteção de rotas por middleware (sessão via `@supabase/ssr`) e RLS no banco
+- **CPF/CNPJ obrigatório e único** por conta, com validação de dígitos (cliente + Postgres) e imutável após cadastro
+- **Trial de 3 dias** automático; depois exige plano (Pro/Premium) ou **token de extensão**
+- **Painel admin** (`/admin`, restrito) para gerar tokens de acesso com validade em dias
+- Proteção de rotas via middleware + RLS no banco
 
-### Open Finance (Pluggy)
-- Conexão de bancos via **Pluggy Connect Widget** (sandbox e produção)
-- Sincronização de contas e transações para o Supabase (`/api/pluggy/sync`)
-- Gate de onboarding: o painel só libera após conectar ≥1 instituição
-- Suporte a contas correntes, poupança, cartões, investimentos e empréstimos
+### Dados financeiros
+- **Importação de extrato OFX/CSV** (qualquer banco, grátis, isolado por usuário)
+- **Open Finance via Banco MCP** (hoje restrito ao admin — ver nota em Fontes de dados)
+- Sincronização para o Supabase; categorias traduzidas para **pt-BR**
+- Detecção automática de **recorrências** a partir das transações
 
-### Painel e análise
-- Visão geral com gasto vs. limite, distribuição por categoria e insights
-- Fluxo de caixa, projeção de saldo, patrimônio (ativos − dívidas)
-- Faturas com ciclos de faturamento; categorias hierárquicas com limites
-- Ocultação global de valores, modo escuro e layout responsivo
+### Painel & análise (dados reais)
+- Visão geral: gasto do mês (dia 1→hoje), resultado e razão Gasto/Receita c/ variação, distribuição por categoria (top 10), patrimônio, transações recentes
+- Transações, Fluxo de Caixa, Categorias e Recorrentes derivados das transações reais
+- Ocultar valores (👁), modo escuro/claro, responsivo
+- **Feedback in-app** (widget flutuante → tabela `feedback`)
 
 ---
 
 ## Stack
-
 | Camada | Tecnologia |
 |--------|-----------|
 | Framework | **Next.js 14** (App Router) + **TypeScript** |
-| Estilo | **Tailwind CSS** (design system custom) · **lucide-react** |
+| Estilo | **Tailwind CSS** custom · **lucide-react** · marca/ícone próprios (SVG) |
 | Gráficos / motion | **Recharts** · **framer-motion** |
 | Estado / dados | **Zustand** · **TanStack Query** |
 | Auth + DB | **Supabase** (Auth, Postgres, RLS) via `@supabase/ssr` |
-| Open Finance | **Pluggy** (`react-pluggy-connect` + REST API) |
-| Deploy | **Vercel** (frontend + rotas/edge) |
+| Open Finance | **Banco MCP** (mcp.ai) — REST sobre Pluggy |
+| Deploy | **Vercel** |
 
 ---
 
 ## Fluxo de acesso
-
 ```
-/login  →  /onboarding (CPF/CNPJ)  →  /connect (banco via Open Finance)  →  /  (dashboard)
+/login → /onboarding (CPF/CNPJ) → [trial/plano] → /connect (fonte de dados) → /  (dashboard)
 ```
-
-O `middleware.ts` aplica os três portões em ordem: sem sessão → `/login`; sem CPF/CNPJ → `/onboarding`; sem banco conectado → `/connect`.
+O `middleware.ts` aplica os portões em ordem: sessão → CPF/CNPJ → trial/plano (`/upgrade` se expirado) → fonte conectada (`/connect`).
 
 ---
 
 ## Telas
-
-| Rota | Módulo |
+| Rota | Estado |
 |------|--------|
-| `/login` | Login social (Google / Microsoft / Discord) |
-| `/onboarding` | Cadastro e validação de CPF/CNPJ |
-| `/connect` | Conexão de banco via Pluggy (Open Finance) |
-| `/` | Visão Geral (gasto vs. limite, donut, faturas, metas, patrimônio) |
-| `/transactions` | Transações (timeline, tabela, busca, parcelas, câmbio) |
-| `/recurring` | Recorrentes (parcelas, contas fixas, forecast) |
-| `/cashflow` | Fluxo de Caixa |
-| `/accounts` | Contas, cartões e conexões |
-| `/bills` | Faturas e ciclos |
-| `/categories` | Categorias, tags e automações |
-| `/goals` | Metas |
-| `/projection` | Projeção de saldo |
-| `/portfolio` | Patrimônio (ativos/dívidas) |
-| `/profile` | Perfil, plano e indicação |
-
-> Observação: dashboard e telas internas usam dados de exemplo até a primeira sincronização real da Pluggy estar validada (ver Roadmap).
+| `/login` `/onboarding` `/connect` `/upgrade` `/admin` | Auth, identidade, conexão, paywall, admin |
+| `/` Visão Geral · `/transactions` · `/cashflow` · `/categories` · `/recurring` · `/accounts` | **Dados reais** |
+| `/bills` · `/projection` · `/goals` · `/portfolio` | Exemplo (com aviso) — pendentes de fonte real |
+| `/profile` | Perfil, plano, indicação |
 
 ---
 
-## Design System
-
-Estética **Obsidian Bloom** — fintech premium sobre base carbono:
-
-| Papel | Cor |
-|-------|-----|
-| Primário (Indigo Bloom) | `#8332AC` |
-| Acento (Violet) | `#E086D3` |
-| Positivo / dinheiro (Celadon) | `#B8EBD0` |
-| Destaque (Almond Silk) | `#F2D1C9` |
-| Base (Carbon Black) | `#191919` |
-
-Tipografia: **Space Grotesk** (números/display) + **Manrope** (corpo). Tudo via CSS variables, com modo claro derivado da mesma paleta.
+## Fontes de dados
+- **OFX/CSV** — caminho recomendado para qualquer usuário hoje: extrato real, isolado por usuário (RLS), sem custo.
+- **Open Finance (Banco MCP)** — **single-tenant**: a API do Banco MCP lê sempre os dados do dono do workspace, não isola por usuário final. Por isso fica **restrito ao admin** (`OPENFINANCE_ALLOWED_EMAILS`). Multi-tenant real (cada usuário seu banco) exige revenda do MCP.AI ou agregador direto (Pluggy/Belvo/Klavi) — ver Roadmap.
 
 ---
 
 ## Banco de dados (Supabase)
+Tabelas com **RLS** (isolamento por usuário):
+- **profiles** — `tax_id` (CPF/CNPJ único), `tax_id_type`, `onboarded`, `plan`, `trial_ends_at`
+- **connections / accounts / transactions** — dados sincronizados (OFX/CSV ou Open Finance)
+- **feedback** — sugestões in-app
+- **access_tokens** — tokens de extensão de trial (admin) · **app_admins** — admins
+Funções: validação CPF/CNPJ, `redeem_access_token` (SECURITY DEFINER), `is_admin`. Advisors de segurança: sem pendências relevantes.
 
-Tabelas com **RLS** (cada usuário só acessa os próprios dados):
+---
 
-- **profiles** — `id` (→ `auth.users`), `tax_id` (CPF/CNPJ, único), `tax_id_type`, `onboarded`. Funções `is_valid_cpf` / `is_valid_cnpj` + triggers de validação e criação automática no signup.
-- **connections** — `pluggy_item_id`, instituição, `status`, `last_sync_at`.
-- **accounts** — `pluggy_account_id`, tipo, `balance`, `credit_limit`, moeda.
-- **transactions** — `pluggy_transaction_id`, `amount` (com sinal), `type`, `date`, `category`.
+## Variáveis de ambiente
+```bash
+# Supabase (anon key é pública, protegida por RLS)
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
 
-Migrations aplicadas: `identity_profiles_cpf_cnpj`, `harden_trigger_functions_execute`, `openfinance_connections_accounts_transactions`.
+# Banco MCP (Open Finance) — chave do painel banco.mcp.ai
+BANCOMCP_API_KEY=
+# (opcional) base/identidade
+BANCOMCP_BASE_URL=https://api.mcp.ai
+
+# Acesso/admin (vírgula separa e-mails)
+OPENFINANCE_ALLOWED_EMAILS=
+ADMIN_EMAILS=
+```
 
 ---
 
 ## Início rápido
-
 ```bash
 npm install
 cp .env.example .env.local   # preencha as variáveis
 npm run dev                  # http://localhost:3000
 ```
+> Não rode `npm install` em pasta sincronizada (OneDrive/Dropbox) — corrompe o `node_modules`.
 
-> Evite rodar `npm install` em pastas sincronizadas (OneDrive/Dropbox) — a sincronização pode corromper o `node_modules`.
-
----
-
-## Variáveis de ambiente
-
-```bash
-# Supabase (a anon key é pública por design, protegida por RLS)
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-
-# Pluggy (Open Finance) — credenciais do sandbox/produção em dashboard.pluggy.ai
-PLUGGY_CLIENT_ID=
-PLUGGY_CLIENT_SECRET=
-```
-
-Configuração dos provedores OAuth (Google/Microsoft/Discord), Site URL e Redirect URLs: ver **`docs/AUTH_SETUP.md`**.
+Teste de carga (pós-deploy): `BASE_URL=https://... k6 run scripts/loadtest.js`.
 
 ---
 
 ## Deploy
-
-- **Vercel** ligada ao repositório (deploy automático a cada push na `main`).
-- Definir as mesmas variáveis de ambiente no projeto da Vercel.
-- No Supabase → Authentication → URL Configuration: **Site URL** = domínio de produção; **Redirect URLs** = `https://SEU-DOMINIO/**` e `http://localhost:3000/**`.
+- **Vercel** ligada ao repositório (deploy automático no push da `main`); mesmas env vars no projeto.
+- **Supabase** → Authentication → URL Configuration: Site URL = domínio de produção; Redirect URLs = `https://SEU-DOMINIO/**` e `http://localhost:3000/**`.
+- Provedores OAuth (Google/Microsoft/Discord): ver `docs/AUTH_SETUP.md`.
 
 ---
 
 ## Roadmap
-
-- [ ] Ligar dashboard/contas/transações aos dados reais da Pluggy (pós primeira conexão)
-- [ ] Trial de 3 dias + planos Pro/Premium + token de extensão (validade configurável)
-- [ ] Alertas via WhatsApp para metas de receita/gastos
-- [ ] Teste de carga com múltiplos usuários simultâneos
+- [ ] Ligar Projeção, Patrimônio (investimentos) e Faturas aos dados reais
+- [ ] Pagamento real dos planos (Stripe) + trial de 14 dias premium
+- [ ] Open Finance multi-tenant: revenda Banco MCP **ou** agregador direto (Pluggy/Belvo/Klavi)
+- [ ] Alertas de metas via WhatsApp
+- [ ] Teste de carga com múltiplos usuários
 - [ ] Domínio personalizado
-- [ ] Campo de sugestões e feedback in-app
-- [ ] Categorização automática (regras + LLM) e criptografia/auditoria
 
 ---
 
 ## Licença
-
 MIT.

@@ -4,15 +4,15 @@ import {
   AreaChart, Area, PieChart, Pie, Cell, ResponsiveContainer, Tooltip, XAxis,
 } from "recharts";
 import { Card, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Money } from "@/components/ui/money";
 import type { DbAccount, DbTransaction, DbConnection } from "@/lib/data";
 import { brl } from "@/lib/format";
 import { categoryPtBr } from "@/lib/categories-ptbr";
-import { ArrowRight, TrendingUp, Wallet } from "lucide-react";
+import { ArrowRight, Wallet } from "lucide-react";
 
 const tt = { background: "#1C1C22", border: "1px solid #2C2C34", borderRadius: 12, color: "#EAEEF6", fontSize: 12 };
-const PALETTE = ["#8332AC", "#E086D3", "#B8EBD0", "#F2D1C9", "#9D4EDD", "#5FBF96", "#F4B860", "#FF6B7A"];
+const PALETTE = ["#8332AC", "#E086D3", "#B8EBD0", "#F2D1C9", "#9D4EDD", "#5FBF96", "#F4B860", "#FF6B7A", "#0EA5E9", "#EAB308"];
+const pad = (n: number) => String(n).padStart(2, "0");
 
 export function DashboardReal({ accounts, transactions, connections }: { accounts: DbAccount[]; transactions: DbTransaction[]; connections: DbConnection[] }) {
   const isCredit = (a: DbAccount) => (a.type ?? "").toUpperCase() === "CREDIT";
@@ -20,33 +20,51 @@ export function DashboardReal({ accounts, transactions, connections }: { account
   const dividas = accounts.filter(isCredit).reduce((s, a) => s + Math.abs(a.balance), 0);
   const patrimonio = ativos - dividas;
 
-  const months = Array.from(new Set(transactions.map((t) => t.date.slice(0, 7)))).sort();
-  const month = months[months.length - 1] ?? new Date().toISOString().slice(0, 7);
-  const monthLabel = new Date(month + "-01T00:00:00").toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
-  const monthTx = transactions.filter((t) => t.date.startsWith(month));
+  // Mês corrente, limitado até hoje
+  const now = new Date();
+  const todayStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+  const todayDay = now.getDate();
+  const month = todayStr.slice(0, 7);
+  const monthLabel = now.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+  const monthTx = transactions.filter((t) => t.date.startsWith(month) && t.date <= todayStr);
+
   const income = monthTx.filter((t) => t.amount > 0).reduce((s, t) => s + t.amount, 0);
   const expense = monthTx.filter((t) => t.amount < 0).reduce((s, t) => s + Math.abs(t.amount), 0);
-  const net = income - expense;
 
-  // gasto acumulado por dia
-  const daysInMonth = new Date(Number(month.slice(0, 4)), Number(month.slice(5, 7)), 0).getDate();
+  // Resultado (delta Receita - Gasto) + razão Gasto/Receita + variação vs mês anterior
+  const delta = income - expense;
+  const ratio = income > 0 ? (expense / income) * 100 : null;
+  const prevD = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const prevMonth = `${prevD.getFullYear()}-${pad(prevD.getMonth() + 1)}`;
+  const prevTx = transactions.filter((t) => t.date.startsWith(prevMonth));
+  const prevIncome = prevTx.filter((t) => t.amount > 0).reduce((s, t) => s + t.amount, 0);
+  const prevExpense = prevTx.filter((t) => t.amount < 0).reduce((s, t) => s + Math.abs(t.amount), 0);
+  const prevRatio = prevIncome > 0 ? (prevExpense / prevIncome) * 100 : null;
+  const ratioVar = ratio !== null && prevRatio !== null ? ratio - prevRatio : null;
+  const fmtPct = (v: number, d = 2) => `${v > 0 ? "+" : ""}${v.toFixed(d).replace(".", ",")}%`;
+
+  // Gasto acumulado: dia 1 até hoje
   let acc = 0;
-  const daily = Array.from({ length: daysInMonth }, (_, i) => {
+  const daily = Array.from({ length: todayDay }, (_, i) => {
     const day = i + 1;
-    const dstr = `${month}-${String(day).padStart(2, "0")}`;
+    const dstr = `${month}-${pad(day)}`;
     acc += monthTx.filter((t) => t.date === dstr && t.amount < 0).reduce((s, t) => s + Math.abs(t.amount), 0);
     return { day, acc: Math.round(acc) };
   });
 
-  // por categoria
+  // Distribuição por categoria — top 10
   const catMap = new Map<string, number>();
   monthTx.filter((t) => t.amount < 0).forEach((t) => {
     const k = categoryPtBr(t.category);
     catMap.set(k, (catMap.get(k) ?? 0) + Math.abs(t.amount));
   });
-  const byCat = Array.from(catMap.entries()).map(([name, value], i) => ({ name, value, color: PALETTE[i % PALETTE.length] })).sort((a, b) => b.value - a.value).slice(0, 7);
+  const byCat = Array.from(catMap.entries())
+    .map(([name, value], i) => ({ name, value, color: PALETTE[i % PALETTE.length] }))
+    .sort((a, b) => b.value - a.value)
+    .slice(0, 10);
 
-  const recent = [...transactions].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 8);
+  // 7 últimas do mês corrente
+  const recent = [...monthTx].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 7);
 
   return (
     <div className="space-y-5">
@@ -62,14 +80,14 @@ export function DashboardReal({ accounts, transactions, connections }: { account
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        {/* Gasto do mês */}
+        {/* Gasto do mês — dia 1 até hoje */}
         <Card className="lg:col-span-2 overflow-hidden relative">
           <div className="orb h-64 w-64 -top-16 -right-10" style={{ background: "radial-gradient(circle, #8332AC, transparent 70%)" }} />
           <div className="orb h-56 w-56 top-10 right-32 animate-float" style={{ background: "radial-gradient(circle, #E086D3, transparent 70%)" }} />
           <div className="relative">
             <CardTitle>Gasto do mês</CardTitle>
             <Money value={expense} gradient glow className="text-5xl font-bold leading-none" />
-            <p className="text-sm text-muted mb-4 mt-1">{monthTx.length} transações em {monthLabel}</p>
+            <p className="text-sm text-muted mb-4 mt-1">{monthTx.length} transações · {monthLabel} (até dia {todayDay})</p>
             <div className="h-40 -mx-1">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={daily} margin={{ top: 6, right: 6, left: 0, bottom: 0 }}>
@@ -86,21 +104,34 @@ export function DashboardReal({ accounts, transactions, connections }: { account
           </div>
         </Card>
 
-        {/* Resultado do mês */}
+        {/* Resultado do mês — em % */}
         <Card className="flex flex-col">
-          <CardTitle action={<Badge tone={net >= 0 ? "positive" : "danger"}>{net >= 0 ? "Positivo" : "Negativo"}</Badge>}>Resultado do mês</CardTitle>
-          <Money value={net} colorize className="text-4xl font-bold leading-none" />
+          <CardTitle>Resultado do mês</CardTitle>
+          <Money value={delta} colorize className="text-4xl font-bold leading-none" />
+          <p className="text-sm mt-1.5">
+            {ratio === null ? (
+              <span className="text-muted">Sem receita no mês</span>
+            ) : (
+              <>
+                <span className="num font-semibold">{ratio.toFixed(1).replace(".", ",")}%</span>
+                <span className="text-muted"> Gasto/Receita</span>
+                {ratioVar !== null && (
+                  <span className={ratioVar > 0 ? "text-danger" : "text-[var(--mint)]"}>{" "}({fmtPct(ratioVar)} vs. mês anterior)</span>
+                )}
+              </>
+            )}
+          </p>
           <div className="mt-auto pt-5 space-y-3">
             <div className="flex items-center justify-between text-sm"><span className="flex items-center gap-2 text-muted"><span className="h-2 w-2 rounded-full bg-[var(--mint)]" />Receita</span><Money value={income} className="text-[var(--mint)] font-semibold" /></div>
-            <div className="flex items-center justify-between text-sm"><span className="flex items-center gap-2 text-muted"><span className="h-2 w-2 rounded-full bg-[var(--danger,#FF6B7A)]" />Gasto</span><Money value={-expense} className="text-danger font-semibold" /></div>
+            <div className="flex items-center justify-between text-sm"><span className="flex items-center gap-2 text-muted"><span className="h-2 w-2 rounded-full" style={{ background: "#FF6B7A" }} />Gasto</span><Money value={-expense} className="text-danger font-semibold" /></div>
           </div>
         </Card>
 
-        {/* Donut categorias */}
+        {/* Distribuição por categoria — top 10 */}
         <Card className="lg:col-span-2">
-          <CardTitle>Distribuição de gastos</CardTitle>
+          <CardTitle>Distribuição de gastos · top 10</CardTitle>
           {byCat.length === 0 ? (
-            <p className="text-sm text-muted py-8 text-center">Sem gastos categorizados neste mês ainda.</p>
+            <p className="text-sm text-muted py-8 text-center">Sem gastos neste mês ainda.</p>
           ) : (
             <div className="flex flex-col sm:flex-row items-center gap-6">
               <div className="relative h-52 w-52 shrink-0">
@@ -129,7 +160,7 @@ export function DashboardReal({ accounts, transactions, connections }: { account
           )}
         </Card>
 
-        {/* Patrimônio */}
+        {/* Patrimônio — mantido */}
         <Card>
           <CardTitle>Patrimônio</CardTitle>
           <Money value={patrimonio} className="text-3xl font-bold" />
@@ -139,20 +170,24 @@ export function DashboardReal({ accounts, transactions, connections }: { account
           </div>
         </Card>
 
-        {/* Transações recentes */}
+        {/* Transações recentes — 7 últimas do mês corrente */}
         <Card className="lg:col-span-3">
           <CardTitle action={<Link href="/transactions" className="text-[var(--accent)] text-xs font-semibold flex items-center gap-1">Ver todas <ArrowRight size={12} /></Link>}>Transações recentes</CardTitle>
-          <div className="divide-y divide-[var(--border)]">
-            {recent.map((t) => (
-              <div key={t.id} className="flex items-center gap-3 py-2.5 text-sm">
-                <span className="grid place-items-center h-8 w-8 rounded-lg bg-[var(--card-2)] text-muted shrink-0"><Wallet size={15} /></span>
-                <span className="flex-1 truncate">{t.description || "—"}</span>
-                <span className="text-muted text-xs hidden sm:block">{categoryPtBr(t.category)}</span>
-                <span className="text-muted text-xs num">{new Date(t.date).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</span>
-                <Money value={t.amount} colorize className="font-semibold w-28 text-right" />
-              </div>
-            ))}
-          </div>
+          {recent.length === 0 ? (
+            <p className="text-sm text-muted py-4 text-center">Nenhuma transação neste mês ainda.</p>
+          ) : (
+            <div className="divide-y divide-[var(--border)]">
+              {recent.map((t) => (
+                <div key={t.id} className="flex items-center gap-3 py-2.5 text-sm">
+                  <span className="grid place-items-center h-8 w-8 rounded-lg bg-[var(--card-2)] text-muted shrink-0"><Wallet size={15} /></span>
+                  <span className="flex-1 truncate">{t.description || "—"}</span>
+                  <span className="text-muted text-xs hidden sm:block">{categoryPtBr(t.category)}</span>
+                  <span className="text-muted text-xs num">{new Date(t.date + "T00:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</span>
+                  <Money value={t.amount} colorize className="font-semibold w-28 text-right" />
+                </div>
+              ))}
+            </div>
+          )}
         </Card>
       </div>
     </div>
