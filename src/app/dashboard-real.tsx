@@ -5,16 +5,17 @@ import {
 } from "recharts";
 import { Card, CardTitle } from "@/components/ui/card";
 import { Money } from "@/components/ui/money";
-import type { DbAccount, DbTransaction, DbConnection } from "@/lib/data";
+import type { DbAccount, DbTransaction, DbConnection, UserCategory } from "@/lib/data";
 import { brl } from "@/lib/format";
-import { categoryPtBr } from "@/lib/categories-ptbr";
+import { makeResolver } from "@/lib/cat-resolve";
 import { ArrowRight, Wallet } from "lucide-react";
 
 const tt = { background: "#1C1C22", border: "1px solid #2C2C34", borderRadius: 12, color: "#EAEEF6", fontSize: 12 };
 const PALETTE = ["#8332AC", "#E086D3", "#B8EBD0", "#F2D1C9", "#9D4EDD", "#5FBF96", "#F4B860", "#FF6B7A", "#0EA5E9", "#EAB308"];
 const pad = (n: number) => String(n).padStart(2, "0");
 
-export function DashboardReal({ accounts, transactions, connections }: { accounts: DbAccount[]; transactions: DbTransaction[]; connections: DbConnection[] }) {
+export function DashboardReal({ accounts, transactions, connections, categories }: { accounts: DbAccount[]; transactions: DbTransaction[]; connections: DbConnection[]; categories: UserCategory[] }) {
+  const resolver = makeResolver(categories);
   const isCredit = (a: DbAccount) => (a.type ?? "").toUpperCase() === "CREDIT";
   const ativos = accounts.filter((a) => !isCredit(a)).reduce((s, a) => s + a.balance, 0);
   const dividas = accounts.filter(isCredit).reduce((s, a) => s + Math.abs(a.balance), 0);
@@ -55,7 +56,7 @@ export function DashboardReal({ accounts, transactions, connections }: { account
   // Distribuição por categoria — top 10
   const catMap = new Map<string, number>();
   monthTx.filter((t) => t.amount < 0).forEach((t) => {
-    const k = categoryPtBr(t.category);
+    const k = resolver.parentLabel(t);
     catMap.set(k, (catMap.get(k) ?? 0) + Math.abs(t.amount));
   });
   const byCat = Array.from(catMap.entries())
@@ -181,7 +182,7 @@ export function DashboardReal({ accounts, transactions, connections }: { account
                 <div key={t.id} className="flex items-center gap-3 py-2.5 text-sm">
                   <span className="grid place-items-center h-8 w-8 rounded-lg bg-[var(--card-2)] text-muted shrink-0"><Wallet size={15} /></span>
                   <span className="flex-1 truncate">{t.description || "—"}</span>
-                  <span className="text-muted text-xs hidden sm:block">{categoryPtBr(t.category)}</span>
+                  <span className="text-muted text-xs hidden sm:block">{resolver.label(t)}</span>
                   <span className="text-muted text-xs num">{new Date(t.date + "T00:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</span>
                   <Money value={t.amount} colorize className="font-semibold w-28 text-right" />
                 </div>

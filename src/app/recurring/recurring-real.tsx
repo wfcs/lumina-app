@@ -4,8 +4,9 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Money } from "@/components/ui/money";
-import type { DbTransaction } from "@/lib/data";
-import { categoryPtBr } from "@/lib/categories-ptbr";
+import type { DbTransaction, UserCategory } from "@/lib/data";
+import { makeResolver } from "@/lib/cat-resolve";
+import type { Resolver } from "@/lib/cat-resolve";
 import { Repeat, TrendingDown, TrendingUp } from "lucide-react";
 
 function normalize(desc: string | null): string {
@@ -26,7 +27,7 @@ function topOf(counter: Map<string, number>, fallback: string): string {
   return best;
 }
 
-function detect(txs: DbTransaction[], sign: "expense" | "income"): Group[] {
+function detect(txs: DbTransaction[], sign: "expense" | "income", resolver: Resolver): Group[] {
   const map = new Map<string, DbTransaction[]>();
   for (const t of txs) {
     const isExp = t.amount < 0;
@@ -45,7 +46,7 @@ function detect(txs: DbTransaction[], sign: "expense" | "income"): Group[] {
     const catCount = new Map<string, number>();
     const nameCount = new Map<string, number>();
     items.forEach((i) => {
-      const c = i.category ?? "";
+      const c = resolver.parentLabel(i);
       catCount.set(c, (catCount.get(c) ?? 0) + 1);
       const d = (i.description ?? "").trim();
       nameCount.set(d, (nameCount.get(d) ?? 0) + 1);
@@ -56,17 +57,18 @@ function detect(txs: DbTransaction[], sign: "expense" | "income"): Group[] {
       avg: total / items.length,
       count: items.length,
       months: months.size,
-      category: categoryPtBr(topOf(catCount, "") || null),
+      category: topOf(catCount, "Sem categoria"),
       lastDate: items.map((i) => i.date).sort().slice(-1)[0] ?? "",
     });
   });
   return groups.sort((a, b) => b.avg - a.avg);
 }
 
-export function RecurringReal({ transactions }: { transactions: DbTransaction[] }) {
+export function RecurringReal({ transactions, categories }: { transactions: DbTransaction[]; categories: UserCategory[] }) {
+  const resolver = makeResolver(categories);
   const [tab, setTab] = useState<"expense" | "income">("expense");
-  const expense = useMemo(() => detect(transactions, "expense"), [transactions]);
-  const income = useMemo(() => detect(transactions, "income"), [transactions]);
+  const expense = useMemo(() => detect(transactions, "expense", resolver), [transactions, resolver]);
+  const income = useMemo(() => detect(transactions, "income", resolver), [transactions, resolver]);
   const list = tab === "expense" ? expense : income;
   const monthlyExpense = expense.reduce((s, g) => s + g.avg, 0);
   const monthlyIncome = income.reduce((s, g) => s + g.avg, 0);

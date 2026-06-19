@@ -1,10 +1,10 @@
-import { getTransactions, hasConnection } from "@/lib/data";
-import { CategoriesReal } from "./categories-real";
-import { CategoriesMock } from "./categories-mock";
+import { createClient } from "@/lib/supabase/server";
+import { getTransactions, getUserCategories } from "@/lib/data";
+import { CategoriesView } from "./categories-view";
 
 export default async function CategoriesPage() {
-  if (!(await hasConnection())) return <CategoriesMock />;
-  const transactions = await getTransactions(1000);
-  if (transactions.length === 0) return <CategoriesMock />;
-  return <CategoriesReal transactions={transactions} />;
+  const supabase = createClient();
+  await supabase.rpc("ensure_default_categories");
+  const [transactions, categories] = await Promise.all([getTransactions(2000), getUserCategories()]);
+  return <CategoriesView transactions={transactions} categories={categories} />;
 }

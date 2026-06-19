@@ -10,7 +10,7 @@ export interface DbConnection {
 }
 export interface DbTransaction {
   id: string; account_id: string; description: string | null; amount: number;
-  type: string | null; date: string; category: string | null;
+  type: string | null; date: string; category: string | null; category_id: string | null;
 }
 
 export async function hasConnection(): Promise<boolean> {
@@ -42,8 +42,20 @@ export async function getTransactions(limit = 200): Promise<DbTransaction[]> {
   const supabase = createClient();
   const { data } = await supabase
     .from("transactions")
-    .select("id, account_id, description, amount, type, date, category")
+    .select("id, account_id, description, amount, type, date, category, category_id")
     .order("date", { ascending: false })
     .limit(limit);
+  return data ?? [];
+}
+
+export interface UserCategory {
+  id: string; parent_id: string | null; name: string; emoji: string | null; is_default: boolean;
+}
+export async function getUserCategories(): Promise<UserCategory[]> {
+  const supabase = createClient();
+  const { data } = await supabase
+    .from("user_categories")
+    .select("id, parent_id, name, emoji, is_default")
+    .order("created_at");
   return data ?? [];
 }

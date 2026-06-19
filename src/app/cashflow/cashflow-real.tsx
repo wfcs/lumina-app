@@ -3,8 +3,8 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Money } from "@/components/ui/money";
-import type { DbTransaction } from "@/lib/data";
-import { categoryPtBr } from "@/lib/categories-ptbr";
+import type { DbTransaction, UserCategory } from "@/lib/data";
+import { makeResolver } from "@/lib/cat-resolve";
 import { brl } from "@/lib/format";
 import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import { TrendingUp, TrendingDown } from "lucide-react";
@@ -12,7 +12,8 @@ import { TrendingUp, TrendingDown } from "lucide-react";
 const tt = { background: "#1C1C22", border: "1px solid #2C2C34", borderRadius: 12, color: "#EAEEF6", fontSize: 12 };
 const PALETTE = ["#8332AC", "#E086D3", "#B8EBD0", "#F2D1C9", "#9D4EDD", "#5FBF96", "#F4B860", "#FF6B7A"];
 
-export function CashflowReal({ transactions }: { transactions: DbTransaction[] }) {
+export function CashflowReal({ transactions, categories }: { transactions: DbTransaction[]; categories: UserCategory[] }) {
+  const resolver = makeResolver(categories);
   const byMonth = new Map<string, { income: number; expense: number }>();
   for (const t of transactions) {
     const m = t.date.slice(0, 7);
@@ -28,7 +29,7 @@ export function CashflowReal({ transactions }: { transactions: DbTransaction[] }
 
   const catMap = new Map<string, number>();
   transactions.filter((t) => t.amount < 0).forEach((t) => {
-    const k = categoryPtBr(t.category);
+    const k = resolver.parentLabel(t);
     catMap.set(k, (catMap.get(k) ?? 0) + Math.abs(t.amount));
   });
   const byCat = Array.from(catMap.entries()).map(([name, value], i) => ({ name, value, color: PALETTE[i % PALETTE.length] })).sort((a, b) => b.value - a.value);
