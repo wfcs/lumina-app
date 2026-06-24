@@ -4,7 +4,7 @@ const MAP: Record<string, string> = {
   "salary": "Salário",
   "transfers": "Transferências",
   "transfer": "Transferências",
-  "same person transfer": "Transferência entre contas",
+  "same person transfer": "Entre contas",
   "pix": "Pix",
   "ted": "TED",
   "doc": "DOC",
@@ -68,6 +68,11 @@ const MAP: Record<string, string> = {
   "leisure and entertainment": "Lazer",
   "uncategorized": "Sem categoria",
   "other": "Outros",
+  "transfer - pix": "Pix",
+  "transferência entre contas": "Entre contas",
+  "transfer - ted": "TED/DOC",
+  "transfer - doc": "TED/DOC",
+  "bookstore": "Livros",
 };
 
 export function categoryPtBr(raw: string | null | undefined): string {
