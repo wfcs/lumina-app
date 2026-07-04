@@ -15,6 +15,7 @@ export default function UpgradePage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [ok, setOk] = useState<string | null>(null);
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
 
   async function redeem() {
     if (!code.trim()) return;
@@ -31,6 +32,22 @@ export default function UpgradePage() {
     } catch (e: any) {
       setError(e.message ?? "Erro ao resgatar token.");
     } finally { setBusy(false); }
+  }
+
+  async function subscribe(plan: string) {
+    setLoadingPlan(plan); setError(null);
+    try {
+      const res = await fetch("/api/stripe/checkout", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.url) throw new Error(data.error || "Falha ao iniciar o pagamento.");
+      window.location.href = data.url;
+    } catch (e: any) {
+      setError(e.message ?? "Erro no pagamento.");
+      setLoadingPlan(null);
+    }
   }
 
   return (
@@ -52,8 +69,7 @@ export default function UpgradePage() {
               <ul className="space-y-1.5 mb-4">
                 {p.feats.map((f) => <li key={f} className="flex items-start gap-2 text-sm"><Check size={15} className="text-[var(--mint)] mt-0.5 shrink-0" /> {f}</li>)}
               </ul>
-              <button className="w-full h-11 rounded-xl font-semibold text-white" style={{ background: "linear-gradient(135deg, #8332AC, #E086D3)" }}>Assinar {p.name}</button>
-              <p className="text-[11px] text-muted text-center mt-2">Pagamento em breve (em integração)</p>
+              <button onClick={() => subscribe(p.id)} disabled={loadingPlan !== null} className="w-full h-11 rounded-xl font-semibold text-white disabled:opacity-60" style={{ background: "linear-gradient(135deg, #8332AC, #E086D3)" }}>{loadingPlan === p.id ? "Redirecionando…" : `Assinar ${p.name}`}</button>
             </div>
           ))}
         </div>

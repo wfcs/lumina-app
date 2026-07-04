@@ -5,6 +5,12 @@ import { Badge } from "@/components/ui/badge";
 import { Gift, Shield, Bell, CreditCard } from "lucide-react";
 
 export default function ProfilePage() {
+  async function manageSubscription() {
+    const res = await fetch("/api/stripe/portal", { method: "POST" });
+    const data = await res.json();
+    if (!res.ok || !data.url) { alert(data.error || "Sem assinatura ativa."); return; }
+    window.location.href = data.url;
+  }
   return (
     <div>
       <PageHeader title="Perfil" subtitle="Conta, notificações, privacidade e plano" />
@@ -21,6 +27,7 @@ export default function ProfilePage() {
             <Row icon={<Bell size={16} />} label="Notificações" value="Email + Push ativos" />
             <Row icon={<Shield size={16} />} label="Privacidade (LGPD)" value="Consentimento ativo" />
           </div>
+          <button onClick={manageSubscription} className="mt-4 w-full h-10 rounded-xl border border-[var(--border)] text-sm font-medium hover:border-[var(--accent)]/40 transition-colors">Gerenciar assinatura</button>
         </Card>
 
         <Card>

@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 
 export interface DbAccount {
   id: string; connection_id: string; type: string | null; subtype: string | null;
-  name: string | null; balance: number; credit_limit: number | null; currency: string;
+  name: string | null; number: string | null; balance: number; credit_limit: number | null; currency: string;
 }
 export interface DbConnection {
   id: string; institution_name: string | null; institution_image: string | null;
@@ -34,7 +34,7 @@ export async function getAccounts(): Promise<DbAccount[]> {
   const supabase = createClient();
   const { data } = await supabase
     .from("accounts")
-    .select("id, connection_id, type, subtype, name, balance, credit_limit, currency");
+    .select("id, connection_id, type, subtype, name, number, balance, credit_limit, currency");
   return data ?? [];
 }
 
@@ -57,5 +57,12 @@ export async function getUserCategories(): Promise<UserCategory[]> {
     .from("user_categories")
     .select("id, parent_id, name, emoji, is_default")
     .order("created_at");
+  return data ?? [];
+}
+
+export interface CardSetting { account_id: string; closing_day: number; due_day: number; }
+export async function getCardSettings(): Promise<CardSetting[]> {
+  const supabase = createClient();
+  const { data } = await supabase.from("card_settings").select("account_id, closing_day, due_day");
   return data ?? [];
 }
