@@ -72,7 +72,7 @@ export function Sidebar() {
         <div className="p-3 space-y-1">
           <Link href="/profile" className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/[0.03] transition-colors">
             <div className="h-9 w-9 rounded-full grid place-items-center text-white font-semibold text-sm"
-                 style={{ background: "linear-gradient(135deg, #8332AC, #E086D3)" }}>F</div>
+                 style={{ background: "linear-gradient(135deg, #52528C, #D7B8F3)" }}>F</div>
             <div className="text-sm leading-tight">
               <div className="font-semibold">Felipe</div>
               <div className="text-muted text-xs">Plano Premium</div>

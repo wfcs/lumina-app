@@ -34,7 +34,7 @@ export function FeedbackWidget() {
         onClick={() => setOpen(true)}
         title="Enviar feedback"
         className="fixed bottom-5 right-5 z-30 h-12 px-4 rounded-full flex items-center gap-2 text-white font-semibold text-sm shadow-glow-violet"
-        style={{ background: "linear-gradient(135deg, #8332AC, #E086D3)" }}
+        style={{ background: "linear-gradient(135deg, #52528C, #D7B8F3)" }}
       >
         <MessageSquarePlus size={18} /> Feedback
       </button>
@@ -118,7 +118,7 @@ function SubmitButton() {
       type="submit"
       disabled={pending}
       className="w-full h-11 rounded-xl font-semibold text-white transition-opacity disabled:opacity-50"
-      style={{ background: "linear-gradient(135deg, #8332AC, #E086D3)" }}
+      style={{ background: "linear-gradient(135deg, #52528C, #D7B8F3)" }}
     >
       {pending ? "Enviando…" : "Enviar feedback"}
     </button>

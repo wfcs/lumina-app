@@ -58,7 +58,7 @@ export function AdminTokens() {
             <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="ex: tester João"
               className="block mt-1 w-full h-10 px-3 rounded-xl border border-[var(--border)] bg-[var(--card-2)] text-sm outline-none focus:border-[var(--accent)]" />
           </div>
-          <button onClick={generate} disabled={busy} className="h-10 px-5 rounded-xl font-semibold text-white disabled:opacity-50 flex items-center gap-2" style={{ background: "linear-gradient(135deg, #8332AC, #E086D3)" }}>
+          <button onClick={generate} disabled={busy} className="h-10 px-5 rounded-xl font-semibold text-white disabled:opacity-50 flex items-center gap-2" style={{ background: "linear-gradient(135deg, #52528C, #D7B8F3)" }}>
             {busy ? <Loader2 size={16} className="animate-spin" /> : <Ticket size={16} />} Gerar
           </button>
         </div>

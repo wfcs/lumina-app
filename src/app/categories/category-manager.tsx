@@ -41,7 +41,7 @@ export function CategoryManager({ categories }: { categories: UserCategory[] }) 
           placeholder={placeholder}
           className="flex-1 h-9 px-3 rounded-lg border border-[var(--border)] bg-[var(--card-2)] text-sm outline-none focus:border-[var(--accent)]"
         />
-        <button onClick={() => submit(parentId)} disabled={busy} className="grid place-items-center h-8 w-8 rounded-lg text-white" style={{ background: "linear-gradient(135deg,#8332AC,#E086D3)" }}>{busy ? <Loader2 size={14} className="animate-spin" /> : <Check size={15} />}</button>
+        <button onClick={() => submit(parentId)} disabled={busy} className="grid place-items-center h-8 w-8 rounded-lg text-white" style={{ background: "linear-gradient(135deg,#52528C,#D7B8F3)" }}>{busy ? <Loader2 size={14} className="animate-spin" /> : <Check size={15} />}</button>
         <button onClick={() => { setAdding(null); setName(""); setError(null); }} className="grid place-items-center h-8 w-8 rounded-lg border border-[var(--border)] text-muted"><X size={15} /></button>
       </div>
     );
@@ -85,7 +85,7 @@ export function CategoryManager({ categories }: { categories: UserCategory[] }) 
       <div className="mt-3 pt-3 border-t border-[var(--border)]">
         {adding === "ROOT"
           ? <>{addInput(null, "Nova categoria")}{error && <p className="text-danger text-xs mt-1">{error}</p>}</>
-          : <button onClick={() => { setAdding("ROOT"); setName(""); setError(null); }} className="flex items-center gap-1.5 text-sm font-semibold text-white px-3 py-2 rounded-xl" style={{ background: "linear-gradient(135deg,#8332AC,#E086D3)" }}><FolderPlus size={16} /> Nova categoria</button>}
+          : <button onClick={() => { setAdding("ROOT"); setName(""); setError(null); }} className="flex items-center gap-1.5 text-sm font-semibold text-white px-3 py-2 rounded-xl" style={{ background: "linear-gradient(135deg,#52528C,#D7B8F3)" }}><FolderPlus size={16} /> Nova categoria</button>}
       </div>
     </Card>
   );

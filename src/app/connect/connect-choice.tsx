@@ -6,8 +6,8 @@ import { Landmark, FileUp, ArrowRight, ShieldCheck, Clock } from "lucide-react";
 export function ConnectChoice({ canOpenFinance }: { canOpenFinance: boolean }) {
   return (
     <div className="min-h-screen grid place-items-center px-4 relative overflow-hidden">
-      <div className="orb h-80 w-80 -top-10 -left-10" style={{ background: "radial-gradient(circle, #8332AC, transparent 70%)" }} />
-      <div className="orb h-72 w-72 bottom-0 right-0 animate-float" style={{ background: "radial-gradient(circle, #E086D3, transparent 70%)" }} />
+      <div className="orb h-80 w-80 -top-10 -left-10" style={{ background: "radial-gradient(circle, #52528C, transparent 70%)" }} />
+      <div className="orb h-72 w-72 bottom-0 right-0 animate-float" style={{ background: "radial-gradient(circle, #D7B8F3, transparent 70%)" }} />
 
       <div className="relative w-full max-w-lg">
         <div className="flex flex-col items-center text-center mb-6">
@@ -19,7 +19,7 @@ export function ConnectChoice({ canOpenFinance }: { canOpenFinance: boolean }) {
         <div className="space-y-3">
           {canOpenFinance && (
             <Link href="/connect/openfinance" className="card p-5 flex items-center gap-4 hover:border-[var(--accent)]/50 transition-colors group">
-              <div className="h-12 w-12 rounded-2xl grid place-items-center shrink-0 shadow-glow-violet" style={{ background: "linear-gradient(135deg, #8332AC, #E086D3)" }}>
+              <div className="h-12 w-12 rounded-2xl grid place-items-center shrink-0 shadow-glow-violet" style={{ background: "linear-gradient(135deg, #52528C, #D7B8F3)" }}>
                 <Landmark size={22} className="text-white" />
               </div>
               <div className="flex-1 min-w-0">

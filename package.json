@@ -7,7 +7,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "qa": "npm run typecheck && npm run build && npm audit --omit=dev"
   },
   "dependencies": {
     "@supabase/ssr": "^0.5.2",

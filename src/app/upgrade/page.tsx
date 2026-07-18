@@ -52,7 +52,7 @@ export default function UpgradePage() {
 
   return (
     <div className="min-h-screen grid place-items-center px-4 py-10 relative overflow-hidden">
-      <div className="orb h-80 w-80 -top-10 -left-10" style={{ background: "radial-gradient(circle, #8332AC, transparent 70%)" }} />
+      <div className="orb h-80 w-80 -top-10 -left-10" style={{ background: "radial-gradient(circle, #52528C, transparent 70%)" }} />
       <div className="relative w-full max-w-2xl">
         <div className="flex flex-col items-center text-center mb-6">
           <LuminaMark size={44} className="mb-3" />
@@ -69,7 +69,7 @@ export default function UpgradePage() {
               <ul className="space-y-1.5 mb-4">
                 {p.feats.map((f) => <li key={f} className="flex items-start gap-2 text-sm"><Check size={15} className="text-[var(--mint)] mt-0.5 shrink-0" /> {f}</li>)}
               </ul>
-              <button onClick={() => subscribe(p.id)} disabled={loadingPlan !== null} className="w-full h-11 rounded-xl font-semibold text-white disabled:opacity-60" style={{ background: "linear-gradient(135deg, #8332AC, #E086D3)" }}>{loadingPlan === p.id ? "Redirecionando…" : `Assinar ${p.name}`}</button>
+              <button onClick={() => subscribe(p.id)} disabled={loadingPlan !== null} className="w-full h-11 rounded-xl font-semibold text-white disabled:opacity-60" style={{ background: "linear-gradient(135deg, #52528C, #D7B8F3)" }}>{loadingPlan === p.id ? "Redirecionando…" : `Assinar ${p.name}`}</button>
             </div>
           ))}
         </div>
@@ -83,7 +83,7 @@ export default function UpgradePage() {
               <input value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} placeholder="LUM-XXXX-XXXX-XXXX"
                 className="flex-1 h-11 px-3 rounded-xl border border-[var(--border)] bg-[var(--card-2)] num text-sm outline-none focus:border-[var(--accent)]" />
               <button onClick={redeem} disabled={busy || !code.trim()}
-                className="h-11 px-5 rounded-xl font-semibold text-white disabled:opacity-50 flex items-center justify-center gap-2" style={{ background: "linear-gradient(135deg, #8332AC, #E086D3)" }}>
+                className="h-11 px-5 rounded-xl font-semibold text-white disabled:opacity-50 flex items-center justify-center gap-2" style={{ background: "linear-gradient(135deg, #52528C, #D7B8F3)" }}>
                 {busy ? <Loader2 size={16} className="animate-spin" /> : "Resgatar"}
               </button>
             </div>

@@ -6,15 +6,15 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        brand: { DEFAULT: "#9D4EDD", 600: "#9D4EDD", 700: "#8332AC" },
-        indigo2: "#8332AC",
-        violet2: "#E086D3",
-        mint: "#B8EBD0",
-        peach: "#F2D1C9",
-        positive: "#B8EBD0",
-        danger: "#FF6B7A",
-        warn: "#F4B860",
-        neutral: "#9B94A1",
+        brand: { DEFAULT: "#52528C", 600: "#52528C", 700: "#3E3E6E" },
+        indigo2: "#3E3E6E",
+        violet2: "#D7B8F3",
+        mint: "#37B588",
+        peach: "#B8B8F3",
+        positive: "#37B588",
+        danger: "#E0537B",
+        warn: "#A879D6",
+        neutral: "#8079A0",
       },
       fontFamily: {
         sans: ["Manrope", "system-ui", "sans-serif"],
@@ -22,9 +22,9 @@ const config: Config = {
       },
       borderRadius: { xl: "1rem", "2xl": "1.25rem" },
       boxShadow: {
-        glow: "0 0 0 1px rgba(157,78,221,0.28), 0 8px 40px -8px rgba(157,78,221,0.5)",
-        "glow-mint": "0 0 28px -4px rgba(184,235,208,0.55)",
-        "glow-violet": "0 0 30px -4px rgba(224,134,211,0.55)",
+        glow: "0 0 0 1px rgba(82,82,140,0.30), 0 8px 40px -8px rgba(82,82,140,0.5)",
+        "glow-mint": "0 0 28px -4px rgba(79,206,154,0.5)",
+        "glow-violet": "0 0 30px -4px rgba(215,184,243,0.55)",
         card: "0 1px 0 0 rgba(255,255,255,0.03) inset, 0 12px 32px -16px rgba(0,0,0,0.6)",
       },
       keyframes: {

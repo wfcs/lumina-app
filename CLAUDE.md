@@ -11,6 +11,23 @@
 - NEVER add a `Co-Authored-By` trailer to user commits unless this project's `.claude/settings.json` has `attribution.commit` set (#2078). The Claude Code Bash tool may suggest one in its default commit-message template — ignore it. `Co-Authored-By` is semantic authorship attribution under git/GitHub convention; the tool is the facilitator, not a co-author.
 - Keep files under 500 lines
 - Validate input at system boundaries
+- ALWAYS run the QA suite at the end of every change to validate it before finishing: `npm run qa` (typecheck → build → prod audit). Report the result. Never conclude a task with the QA in a failing state — fix it or flag it explicitly.
+
+## QA / Definition of Done
+
+Run after **every** code change (single source of truth: the `qa` npm script):
+
+```bash
+npm run qa    # = tsc --noEmit && next build && npm audit --omit=dev
+```
+
+- **typecheck** (`npm run typecheck`) — must pass with zero errors; this is the primary gate.
+- **build** (`npm run build`) — must compile; catches route/SSR/config regressions.
+- **audit** (`npm audit --omit=dev`) — report vulns; a pre-existing baseline (currently 1 high + 1 moderate in Next.js) is acceptable as long as no NEW ones are introduced by the change.
+
+Notes:
+- ESLint is not configured yet (`next lint` opens the interactive setup); typecheck + build are the effective gates until it is.
+- A clean install requires `stripe` in the lockfile — if `stripe` fails to resolve, run `npm install stripe@^16.12.0` and commit the updated `package-lock.json`.
 
 ## Agent Comms (SendMessage-First Coordination)
 

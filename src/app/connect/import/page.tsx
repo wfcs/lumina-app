@@ -32,7 +32,7 @@ export default function ImportPage() {
 
   return (
     <div className="min-h-screen grid place-items-center px-4 relative overflow-hidden">
-      <div className="orb h-72 w-72 -top-10 right-0" style={{ background: "radial-gradient(circle, #B8EBD0, transparent 70%)" }} />
+      <div className="orb h-72 w-72 -top-10 right-0" style={{ background: "radial-gradient(circle, #4FCE9A, transparent 70%)" }} />
       <div className="relative w-full max-w-md">
         <Link />
         <div className="card p-6">
@@ -78,7 +78,7 @@ export default function ImportPage() {
                 onClick={upload}
                 disabled={!file || status === "uploading"}
                 className="w-full h-12 mt-4 rounded-xl font-semibold text-white transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
-                style={{ background: "linear-gradient(135deg, #8332AC, #E086D3)" }}
+                style={{ background: "linear-gradient(135deg, #52528C, #D7B8F3)" }}
               >
                 {status === "uploading" ? <><Loader2 size={18} className="animate-spin" /> Importando…</> : "Importar"}
               </button>

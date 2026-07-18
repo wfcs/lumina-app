@@ -17,7 +17,7 @@ import {
 import { brl } from "@/lib/format";
 import { ArrowRight, TrendingUp, ArrowUpRight } from "lucide-react";
 
-const tt = { background: "#1C1C22", border: "1px solid #2C2C34", borderRadius: 12, color: "#EAEEF6", fontSize: 12 };
+const tt = { background: "#2E1B45", border: "1px solid #4A3568", borderRadius: 12, color: "#F1EEF9", fontSize: 12 };
 
 export function DashboardMock() {
   const spent = dailySpend[dailySpend.length - 1].acc;
@@ -53,8 +53,8 @@ export function DashboardMock() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* HERO — Gasto do mês */}
         <Card className="lg:col-span-2 overflow-hidden relative">
-          <div className="orb h-64 w-64 -top-16 -right-10" style={{ background: "radial-gradient(circle, #8332AC, transparent 70%)" }} />
-          <div className="orb h-56 w-56 top-10 right-32 animate-float" style={{ background: "radial-gradient(circle, #E086D3, transparent 70%)" }} />
+          <div className="orb h-64 w-64 -top-16 -right-10" style={{ background: "radial-gradient(circle, #52528C, transparent 70%)" }} />
+          <div className="orb h-56 w-56 top-10 right-32 animate-float" style={{ background: "radial-gradient(circle, #D7B8F3, transparent 70%)" }} />
           <div className="relative">
             <div className="flex items-center justify-between">
               <CardTitle>Gasto do mês</CardTitle>
@@ -69,16 +69,16 @@ export function DashboardMock() {
                 <AreaChart data={dailySpend} margin={{ top: 6, right: 6, left: 0, bottom: 0 }}>
                   <defs>
                     <linearGradient id="spend" x1="0" y1="0" x2="1" y2="0">
-                      <stop offset="0%" stopColor="#8332AC" /><stop offset="100%" stopColor="#E086D3" />
+                      <stop offset="0%" stopColor="#52528C" /><stop offset="100%" stopColor="#D7B8F3" />
                     </linearGradient>
                     <linearGradient id="spendFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#8332AC" stopOpacity={0.25} /><stop offset="100%" stopColor="#E086D3" stopOpacity={0} />
+                      <stop offset="0%" stopColor="#52528C" stopOpacity={0.25} /><stop offset="100%" stopColor="#D7B8F3" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <XAxis dataKey="day" tick={{ fontSize: 11, fill: "#5d6679" }} tickLine={false} axisLine={false} />
                   <Tooltip contentStyle={tt} formatter={(v: number) => [brl(v), "Acumulado"]} labelFormatter={(l) => `Dia ${l}`} />
-                  <ReferenceLine y={spendLimit} stroke="#FF6B7A" strokeDasharray="4 4" strokeOpacity={0.6} />
-                  <Area type="monotone" dataKey="acc" stroke="url(#spend)" strokeWidth={3} fill="url(#spendFill)" dot={false} activeDot={{ r: 4, fill: "#E086D3" }} />
+                  <ReferenceLine y={spendLimit} stroke="#F0839F" strokeDasharray="4 4" strokeOpacity={0.6} />
+                  <Area type="monotone" dataKey="acc" stroke="url(#spend)" strokeWidth={3} fill="url(#spendFill)" dot={false} activeDot={{ r: 4, fill: "#D7B8F3" }} />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -139,8 +139,8 @@ export function DashboardMock() {
           <div className="h-16 mt-3 -mx-1">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={netWorthHistory}>
-                <defs><linearGradient id="nw" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#B8EBD0" stopOpacity={0.35} /><stop offset="100%" stopColor="#B8EBD0" stopOpacity={0} /></linearGradient></defs>
-                <Area type="monotone" dataKey="value" stroke="#B8EBD0" strokeWidth={2.5} fill="url(#nw)" />
+                <defs><linearGradient id="nw" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#4FCE9A" stopOpacity={0.35} /><stop offset="100%" stopColor="#4FCE9A" stopOpacity={0} /></linearGradient></defs>
+                <Area type="monotone" dataKey="value" stroke="#4FCE9A" strokeWidth={2.5} fill="url(#nw)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -213,7 +213,7 @@ function Stat({ label, value, tone }: { label: string; value: number; tone: "min
   return (
     <div className="flex items-center justify-between">
       <span className="flex items-center gap-2 text-sm text-muted">
-        <span className="h-2 w-2 rounded-full" style={{ background: tone === "mint" ? "var(--mint)" : "var(--danger,#FF6B7A)" }} />{label}
+        <span className="h-2 w-2 rounded-full" style={{ background: tone === "mint" ? "var(--mint)" : "var(--danger,#F0839F)" }} />{label}
       </span>
       <Money value={value} className={tone === "mint" ? "text-[var(--mint)] font-semibold" : "text-danger font-semibold"} />
     </div>
@@ -229,7 +229,7 @@ function Carousel() {
   const cur = insights[i];
   return (
     <Link href={cur.href} className="block card overflow-hidden relative p-0">
-      <div className="orb h-32 w-32 -top-6 left-10 opacity-30" style={{ background: "radial-gradient(circle, #8332AC, transparent 70%)" }} />
+      <div className="orb h-32 w-32 -top-6 left-10 opacity-30" style={{ background: "radial-gradient(circle, #52528C, transparent 70%)" }} />
       <div className="relative px-5 py-4">
         <AnimatePresence mode="wait">
           <motion.div key={cur.id} initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -12 }} transition={{ duration: 0.35 }} className="flex items-center gap-3">

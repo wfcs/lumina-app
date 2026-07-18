@@ -10,8 +10,8 @@ import { brl } from "@/lib/format";
 import { makeResolver } from "@/lib/cat-resolve";
 import { ArrowRight, Wallet } from "lucide-react";
 
-const tt = { background: "#1C1C22", border: "1px solid #2C2C34", borderRadius: 12, color: "#EAEEF6", fontSize: 12 };
-const PALETTE = ["#8332AC", "#E086D3", "#B8EBD0", "#F2D1C9", "#9D4EDD", "#5FBF96", "#F4B860", "#FF6B7A", "#0EA5E9", "#EAB308"];
+const tt = { background: "#2E1B45", border: "1px solid #4A3568", borderRadius: 12, color: "#F1EEF9", fontSize: 12 };
+const PALETTE = ["#52528C", "#D7B8F3", "#4FCE9A", "#B8B8F3", "#8888D4", "#37B588", "#F4B860", "#F0839F", "#0EA5E9", "#EAB308"];
 const pad = (n: number) => String(n).padStart(2, "0");
 
 export function DashboardReal({ accounts, transactions, connections, categories }: { accounts: DbAccount[]; transactions: DbTransaction[]; connections: DbConnection[]; categories: UserCategory[] }) {
@@ -83,8 +83,8 @@ export function DashboardReal({ accounts, transactions, connections, categories 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Gasto do mês — dia 1 até hoje */}
         <Card className="lg:col-span-2 overflow-hidden relative">
-          <div className="orb h-64 w-64 -top-16 -right-10" style={{ background: "radial-gradient(circle, #8332AC, transparent 70%)" }} />
-          <div className="orb h-56 w-56 top-10 right-32 animate-float" style={{ background: "radial-gradient(circle, #E086D3, transparent 70%)" }} />
+          <div className="orb h-64 w-64 -top-16 -right-10" style={{ background: "radial-gradient(circle, #52528C, transparent 70%)" }} />
+          <div className="orb h-56 w-56 top-10 right-32 animate-float" style={{ background: "radial-gradient(circle, #D7B8F3, transparent 70%)" }} />
           <div className="relative">
             <CardTitle>Gasto do mês</CardTitle>
             <Money value={expense} gradient glow className="text-5xl font-bold leading-none" />
@@ -93,8 +93,8 @@ export function DashboardReal({ accounts, transactions, connections, categories 
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={daily} margin={{ top: 6, right: 6, left: 0, bottom: 0 }}>
                   <defs>
-                    <linearGradient id="sp" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stopColor="#8332AC" /><stop offset="100%" stopColor="#E086D3" /></linearGradient>
-                    <linearGradient id="spf" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#8332AC" stopOpacity={0.25} /><stop offset="100%" stopColor="#E086D3" stopOpacity={0} /></linearGradient>
+                    <linearGradient id="sp" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stopColor="#52528C" /><stop offset="100%" stopColor="#D7B8F3" /></linearGradient>
+                    <linearGradient id="spf" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#52528C" stopOpacity={0.25} /><stop offset="100%" stopColor="#D7B8F3" stopOpacity={0} /></linearGradient>
                   </defs>
                   <XAxis dataKey="day" tick={{ fontSize: 11, fill: "#5d6679" }} tickLine={false} axisLine={false} />
                   <Tooltip contentStyle={tt} formatter={(v: number) => [brl(v), "Acumulado"]} labelFormatter={(l) => `Dia ${l}`} />
@@ -124,7 +124,7 @@ export function DashboardReal({ accounts, transactions, connections, categories 
           </p>
           <div className="mt-auto pt-5 space-y-3">
             <div className="flex items-center justify-between text-sm"><span className="flex items-center gap-2 text-muted"><span className="h-2 w-2 rounded-full bg-[var(--mint)]" />Receita</span><Money value={income} className="text-[var(--mint)] font-semibold" /></div>
-            <div className="flex items-center justify-between text-sm"><span className="flex items-center gap-2 text-muted"><span className="h-2 w-2 rounded-full" style={{ background: "#FF6B7A" }} />Gasto</span><Money value={-expense} className="text-danger font-semibold" /></div>
+            <div className="flex items-center justify-between text-sm"><span className="flex items-center gap-2 text-muted"><span className="h-2 w-2 rounded-full" style={{ background: "#F0839F" }} />Gasto</span><Money value={-expense} className="text-danger font-semibold" /></div>
           </div>
         </Card>
 

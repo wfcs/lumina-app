@@ -9,8 +9,8 @@ import { brl } from "@/lib/format";
 import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import { TrendingUp, TrendingDown } from "lucide-react";
 
-const tt = { background: "#1C1C22", border: "1px solid #2C2C34", borderRadius: 12, color: "#EAEEF6", fontSize: 12 };
-const PALETTE = ["#8332AC", "#E086D3", "#B8EBD0", "#F2D1C9", "#9D4EDD", "#5FBF96", "#F4B860", "#FF6B7A"];
+const tt = { background: "#2E1B45", border: "1px solid #4A3568", borderRadius: 12, color: "#F1EEF9", fontSize: 12 };
+const PALETTE = ["#52528C", "#D7B8F3", "#4FCE9A", "#B8B8F3", "#8888D4", "#37B588", "#F4B860", "#F0839F"];
 
 export function CashflowReal({ transactions, categories }: { transactions: DbTransaction[]; categories: UserCategory[] }) {
   const resolver = makeResolver(categories);
@@ -49,7 +49,7 @@ export function CashflowReal({ transactions, categories }: { transactions: DbTra
               <XAxis dataKey="label" tick={{ fontSize: 12, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
               <Tooltip contentStyle={tt} formatter={(v: number) => brl(v)} />
               <Bar dataKey="net" radius={[4, 4, 0, 0]}>
-                {months.map((m, i) => <Cell key={i} fill={m.net >= 0 ? "#B8EBD0" : "#FF6B7A"} />)}
+                {months.map((m, i) => <Cell key={i} fill={m.net >= 0 ? "#4FCE9A" : "#F0839F"} />)}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
