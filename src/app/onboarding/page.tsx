@@ -16,7 +16,7 @@ export default function OnboardingPage() {
 
   return (
     <div className="min-h-screen grid place-items-center px-4 relative overflow-hidden">
-      <div className="orb h-72 w-72 -top-10 right-0" style={{ background: "radial-gradient(circle, #52528C, transparent 70%)" }} />
+      <div className="orb h-72 w-72 -top-10 right-0" style={{ background: "radial-gradient(circle, #7C3AED, transparent 70%)" }} />
       <div className="relative w-full max-w-md">
         <div className="card p-6">
           <LuminaMark size={44} className="mb-4" />
@@ -73,7 +73,7 @@ function SubmitButton({ disabled }: { disabled: boolean }) {
       type="submit"
       disabled={disabled || pending}
       className="w-full h-12 rounded-xl font-semibold text-white transition-opacity disabled:opacity-50"
-      style={{ background: "linear-gradient(135deg, #52528C, #D7B8F3)" }}
+      style={{ background: "linear-gradient(135deg, #7C3AED, #D7B8F3)" }}
     >
       {pending ? "Validando…" : "Continuar"}
     </button>

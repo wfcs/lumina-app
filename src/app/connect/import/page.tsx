@@ -78,7 +78,7 @@ export default function ImportPage() {
                 onClick={upload}
                 disabled={!file || status === "uploading"}
                 className="w-full h-12 mt-4 rounded-xl font-semibold text-white transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
-                style={{ background: "linear-gradient(135deg, #52528C, #D7B8F3)" }}
+                style={{ background: "linear-gradient(135deg, #7C3AED, #D7B8F3)" }}
               >
                 {status === "uploading" ? <><Loader2 size={18} className="animate-spin" /> Importando…</> : "Importar"}
               </button>

@@ -7,7 +7,7 @@ import { brl } from "@/lib/format";
 import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
 import { AlertTriangle, TrendingUp } from "lucide-react";
 
-const tt = { background: "#2E1B45", border: "1px solid #4A3568", borderRadius: 12, color: "#F1EEF9", fontSize: 12 };
+const tt = { background: "#16111F", border: "1px solid #2C2344", borderRadius: 12, color: "#F2ECFA", fontSize: 12 };
 const MES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
 
 export function ProjectionReal({ accounts, transactions }: { accounts: DbAccount[]; transactions: DbTransaction[] }) {
@@ -51,11 +51,11 @@ export function ProjectionReal({ accounts, transactions }: { accounts: DbAccount
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={data}>
-              <defs><linearGradient id="pj" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#52528C" stopOpacity={0.3} /><stop offset="100%" stopColor="#D7B8F3" stopOpacity={0} /></linearGradient></defs>
+              <defs><linearGradient id="pj" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#7C3AED" stopOpacity={0.3} /><stop offset="100%" stopColor="#D7B8F3" stopOpacity={0} /></linearGradient></defs>
               <XAxis dataKey="label" tick={{ fontSize: 12, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
               <Tooltip contentStyle={tt} formatter={(v: number) => brl(v)} />
               <ReferenceLine y={0} stroke="#F0839F" strokeDasharray="4 4" strokeOpacity={0.5} />
-              <Area type="monotone" dataKey="saldo" stroke="#8888D4" strokeWidth={2.5} fill="url(#pj)" />
+              <Area type="monotone" dataKey="saldo" stroke="#A855F7" strokeWidth={2.5} fill="url(#pj)" />
             </AreaChart>
           </ResponsiveContainer>
         </div>

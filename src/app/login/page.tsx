@@ -29,7 +29,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen grid place-items-center px-4 relative overflow-hidden">
-      <div className="orb h-80 w-80 -top-10 -left-10" style={{ background: "radial-gradient(circle, #52528C, transparent 70%)" }} />
+      <div className="orb h-80 w-80 -top-10 -left-10" style={{ background: "radial-gradient(circle, #7C3AED, transparent 70%)" }} />
       <div className="orb h-72 w-72 bottom-0 right-0 animate-float" style={{ background: "radial-gradient(circle, #D7B8F3, transparent 70%)" }} />
 
       <div className="relative w-full max-w-sm">

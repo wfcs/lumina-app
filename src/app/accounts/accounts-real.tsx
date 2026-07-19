@@ -53,7 +53,7 @@ export function AccountsReal({ accounts, connections }: { accounts: DbAccount[];
   return (
     <div>
       <PageHeader title="Contas" subtitle="Tudo que está conectado via Open Finance" action={
-        <a href="/connect" className="inline-flex items-center gap-1.5 text-white px-3 py-2 rounded-xl text-sm font-semibold" style={{ background: "linear-gradient(135deg, #52528C, #D7B8F3)" }}><Plus size={16} /> Adicionar banco</a>
+        <a href="/connect" className="inline-flex items-center gap-1.5 text-white px-3 py-2 rounded-xl text-sm font-semibold" style={{ background: "linear-gradient(135deg, #7C3AED, #D7B8F3)" }}><Plus size={16} /> Adicionar banco</a>
       } />
 
       {cards.length > 0 && (

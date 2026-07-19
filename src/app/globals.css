@@ -2,40 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Amethyst Bloom — periwinkle / mauve / grape / midnight violet ──
-   Periwinkle #B8B8F3 · Mauve #D7B8F3 · Dusty Grape #52528C
-   Dark Amethyst #372554 · Midnight Violet #231123 */
+/* ── Violet Noir — preto arroxeado / roxo vibrante / lilás ──
+   Roxo #A855F7 · Lilás #D7B8F3 · Lilás claro #C9A9FF
+   Preto arroxeado #0B0910 · Cartão #16111F */
 :root, .dark {
-  --bg: #231123;         /* midnight violet */
-  --bg-elev: #2A1838;
-  --card: #2E1B45;
-  --card-2: #372554;     /* dark amethyst */
-  --border: #4A3568;
-  --border-soft: #2E1B45;
-  --text: #F1EEF9;
-  --muted: #B4AFD6;
-  --accent: #8888D4;     /* lifted grape — visível como texto/ícone no escuro */
-  --indigo: #B8B8F3;     /* periwinkle */
-  --violet: #D7B8F3;     /* mauve = destaque/gradiente */
+  --bg: #0B0910;         /* preto arroxeado */
+  --bg-elev: #120F1A;
+  --card: #16111F;
+  --card-2: #1F1832;
+  --border: #2C2344;
+  --border-soft: #1F1832;
+  --text: #F2ECFA;
+  --muted: #A99FC6;
+  --accent: #A855F7;     /* roxo vibrante */
+  --indigo: #C9A9FF;     /* lilás claro */
+  --violet: #D7B8F3;     /* lilás = destaque/gradiente */
   --mint: #4FCE9A;       /* positivo/dinheiro */
-  --peach: #B8B8F3;      /* periwinkle = destaque */
+  --peach: #C9A9FF;      /* lilás = destaque */
   --danger: #F0839F;
   --warn: #C79BEA;
 }
 .light {
-  --bg: #F4F3FB;
+  --bg: #F6F3FC;
   --bg-elev: #FFFFFF;
   --card: #FFFFFF;
-  --card-2: #F6F4FC;
-  --border: #E2DEF3;
-  --border-soft: #EDEBF8;
-  --text: #231123;       /* midnight violet */
-  --muted: #6A6584;
-  --accent: #52528C;     /* dusty grape */
-  --indigo: #3E3E6E;
-  --violet: #A96FD0;
+  --card-2: #F3EEFB;
+  --border: #E7DEF7;
+  --border-soft: #EFE9FA;
+  --text: #140C22;       /* quase preto arroxeado */
+  --muted: #6A6088;
+  --accent: #7C3AED;     /* roxo */
+  --indigo: #6D28D9;
+  --violet: #9B6FD0;
   --mint: #2F9E6F;
-  --peach: #C9A2E8;
+  --peach: #C9A9FF;
   --danger: #D94F74;
   --warn: #A06FD0;
 }
@@ -58,7 +58,7 @@ body::before {
   border-radius: 1.25rem;
   box-shadow: 0 1px 0 0 rgba(255,255,255,0.03) inset, 0 16px 40px -24px rgba(0,0,0,0.7);
 }
-.light .card { box-shadow: 0 1px 2px rgba(35,17,35,0.04), 0 8px 24px -16px rgba(82,82,140,0.16); }
+.light .card { box-shadow: 0 1px 2px rgba(20,12,34,0.04), 0 8px 24px -16px rgba(124,58,237,0.16); }
 
 .hairline { border: 1px solid var(--border); }
 .text-muted { color: var(--muted); }
@@ -67,12 +67,12 @@ body::before {
   background: linear-gradient(100deg, var(--accent), var(--violet));
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
-.glow-num { text-shadow: 0 0 30px rgba(215,184,243,0.42); }
+.glow-num { text-shadow: 0 0 30px rgba(168,85,247,0.45); }
 
 .orb { position: absolute; border-radius: 9999px; filter: blur(48px); opacity: 0.5; pointer-events: none; }
 .num { font-family: 'Space Grotesk', Manrope, sans-serif; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
 
 ::-webkit-scrollbar { width: 9px; height: 9px; }
-::-webkit-scrollbar-thumb { background: #34343d; border-radius: 9999px; }
+::-webkit-scrollbar-thumb { background: #2C2344; border-radius: 9999px; }
 ::-webkit-scrollbar-track { background: transparent; }
 .light ::-webkit-scrollbar-thumb { background: #d4cfee; }

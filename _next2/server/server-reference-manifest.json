@@ -1,0 +1,38 @@
+{
+  "node": {
+    "c8c7aa6772db76059a34eb9f61b36ce79db0be66": {
+      "workers": {
+        "app/login/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22D%3A%5C%5Clumia_app%5C%5Csrc%5C%5Capp%5C%5Cfeedback%5C%5Cactions.ts%22%2C%5B%22submitFeedback%22%5D%5D%5D&__client_imported__=true!",
+        "app/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22D%3A%5C%5Clumia_app%5C%5Csrc%5C%5Capp%5C%5Cfeedback%5C%5Cactions.ts%22%2C%5B%22submitFeedback%22%5D%5D%5D&__client_imported__=true!",
+        "app/transactions/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22D%3A%5C%5Clumia_app%5C%5Csrc%5C%5Capp%5C%5Ctransactions%5C%5Cactions.ts%22%2C%5B%22createCategoryFor%22%2C%22setTransactionCategory%22%5D%5D%2C%5B%22D%3A%5C%5Clumia_app%5C%5Csrc%5C%5Capp%5C%5Cfeedback%5C%5Cactions.ts%22%2C%5B%22submitFeedback%22%5D%5D%5D&__client_imported__=true!",
+        "app/recurring/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22D%3A%5C%5Clumia_app%5C%5Csrc%5C%5Capp%5C%5Cfeedback%5C%5Cactions.ts%22%2C%5B%22submitFeedback%22%5D%5D%5D&__client_imported__=true!",
+        "app/cashflow/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22D%3A%5C%5Clumia_app%5C%5Csrc%5C%5Capp%5C%5Cfeedback%5C%5Cactions.ts%22%2C%5B%22submitFeedback%22%5D%5D%5D&__client_imported__=true!"
+      },
+      "layer": {
+        "app/login/page": "action-browser",
+        "app/page": "action-browser",
+        "app/transactions/page": "action-browser",
+        "app/recurring/page": "action-browser",
+        "app/cashflow/page": "action-browser"
+      }
+    },
+    "f487372ae1b6bbf55dbd315d69121a025041f894": {
+      "workers": {
+        "app/transactions/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22D%3A%5C%5Clumia_app%5C%5Csrc%5C%5Capp%5C%5Ctransactions%5C%5Cactions.ts%22%2C%5B%22createCategoryFor%22%2C%22setTransactionCategory%22%5D%5D%2C%5B%22D%3A%5C%5Clumia_app%5C%5Csrc%5C%5Capp%5C%5Cfeedback%5C%5Cactions.ts%22%2C%5B%22submitFeedback%22%5D%5D%5D&__client_imported__=true!"
+      },
+      "layer": {
+        "app/transactions/page": "action-browser"
+      }
+    },
+    "f8e6d48ca155e96f4f1cb185e344e39a71a8be44": {
+      "workers": {
+        "app/transactions/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22D%3A%5C%5Clumia_app%5C%5Csrc%5C%5Capp%5C%5Ctransactions%5C%5Cactions.ts%22%2C%5B%22createCategoryFor%22%2C%22setTransactionCategory%22%5D%5D%2C%5B%22D%3A%5C%5Clumia_app%5C%5Csrc%5C%5Capp%5C%5Cfeedback%5C%5Cactions.ts%22%2C%5B%22submitFeedback%22%5D%5D%5D&__client_imported__=true!"
+      },
+      "layer": {
+        "app/transactions/page": "action-browser"
+      }
+    }
+  },
+  "edge": {},
+  "encryptionKey": "GZ4hmDevBKBehptw78Q9ViLVbEsLgoeqqq5UvJ/qQtg="
+}
