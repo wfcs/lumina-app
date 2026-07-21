@@ -10,7 +10,7 @@ import { brl } from "@/lib/format";
 import { makeResolver } from "@/lib/cat-resolve";
 import { ArrowRight, ArrowUpRight, Command, Sparkles, Wallet } from "lucide-react";
 
-const PALETTE = ["#7C3AED", "#D7B8F3", "#4FCE9A", "#B8B8F3", "#A855F7", "#37B588", "#F4B860", "#F0839F", "#0EA5E9", "#EAB308"];
+const PALETTE = ["#7C3AED", "#D7B8F3", "#4FCE9A", "#B8B8F3", "#A855F7", "#4FCE9A", "#F4B860", "#F0839F", "#0EA5E9", "#EAB308"];
 const pad = (n: number) => String(n).padStart(2, "0");
 const clamp01 = (n: number) => Math.max(0, Math.min(1, n));
 

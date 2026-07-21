@@ -13,7 +13,7 @@ export function PortfolioReal({ accounts }: { accounts: DbAccount[] }) {
   const totalAtivos = ativos.reduce((s, a) => s + a.balance, 0);
   const totalDividas = dividas.reduce((s, a) => s + Math.abs(a.balance), 0);
   const net = totalAtivos - totalDividas;
-  const PALETTE = ["#7C3AED", "#D7B8F3", "#4FCE9A", "#B8B8F3", "#A855F7", "#37B588"];
+  const PALETTE = ["#7C3AED", "#D7B8F3", "#4FCE9A", "#B8B8F3", "#A855F7", "#4FCE9A"];
 
   return (
     <div>

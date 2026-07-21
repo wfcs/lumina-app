@@ -10,7 +10,7 @@ import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, Cell } from "rechar
 import { TrendingUp, TrendingDown } from "lucide-react";
 
 const tt = { background: "#16111F", border: "1px solid #2C2344", borderRadius: 12, color: "#F2ECFA", fontSize: 12 };
-const PALETTE = ["#7C3AED", "#D7B8F3", "#4FCE9A", "#B8B8F3", "#A855F7", "#37B588", "#F4B860", "#F0839F"];
+const PALETTE = ["#7C3AED", "#D7B8F3", "#4FCE9A", "#B8B8F3", "#A855F7", "#4FCE9A", "#F4B860", "#F0839F"];
 
 export function CashflowReal({ transactions, categories }: { transactions: DbTransaction[]; categories: UserCategory[] }) {
   const resolver = makeResolver(categories);
