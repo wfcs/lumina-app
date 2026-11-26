@@ -26,6 +26,7 @@ describe("V-01 resumo do mês sem contar pagamento de fatura", () => {
   it("reconhece pagamento de fatura pelos dois lados", () => {
     expect(isCardPayment(tx("bank", "", -10, "Pagamento de fatura"), "BANK")).toBe(true);
     expect(isCardPayment(tx("card", "", 10, "Pagamento recebido"), "CREDIT")).toBe(true);
+    expect(isCardPayment(tx("bank", "", -10, "FATURA PAGA ITAU MULTIPL"), "BANK")).toBe(true);
     expect(isCardPayment(tx("bank", "", 10, "Pagamento recebido"), "BANK")).toBe(false);
     expect(isCardPayment(tx("card", "", -10, "Compra"), "CREDIT")).toBe(false);
   });

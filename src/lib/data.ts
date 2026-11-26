@@ -41,13 +41,20 @@ export async function getAccounts(): Promise<DbAccount[]> {
 }
 
 export async function getTransactions(limit = 200): Promise<DbTransaction[]> {
+  // O Supabase devolve no máximo 1.000 linhas por consulta: lê em páginas até `limit`.
   const supabase = createClient();
-  const { data } = await supabase
-    .from("transactions")
-    .select("id, account_id, description, amount, type, date, category, category_id")
-    .order("date", { ascending: false })
-    .limit(limit);
-  return data ?? [];
+  const out: DbTransaction[] = [];
+  for (let from = 0; from < limit; from += 1000) {
+    const to = Math.min(from + 1000, limit) - 1;
+    const { data } = await supabase
+      .from("transactions")
+      .select("id, account_id, description, amount, type, date, category, category_id")
+      .order("date", { ascending: false }).order("id")
+      .range(from, to);
+    out.push(...(data ?? []));
+    if (!data || data.length < to - from + 1) break;
+  }
+  return out;
 }
 
 export interface UserCategory {

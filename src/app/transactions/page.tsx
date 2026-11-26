@@ -12,7 +12,7 @@ export default async function TransactionsPage() {
   const supabase = createClient();
   await supabase.rpc("ensure_default_categories");
   await autocategorize();
-  const [transactions, categories] = await Promise.all([getTransactions(500), getUserCategories()]);
+  const [transactions, categories] = await Promise.all([getTransactions(8000), getUserCategories()]);
   if (transactions.length === 0) {
     return (
       <div>

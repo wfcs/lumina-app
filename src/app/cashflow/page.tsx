@@ -9,7 +9,7 @@ export default async function CashflowPage() {
   const supabase = createClient();
   await supabase.rpc("ensure_default_categories");
   await autocategorize();
-  const [transactions, categories] = await Promise.all([getTransactions(1000), getUserCategories()]);
+  const [transactions, categories] = await Promise.all([getTransactions(2000), getUserCategories()]);
   if (transactions.length === 0) return <CashflowMock />;
   return <CashflowReal transactions={transactions} categories={categories} />;
 }

@@ -7,7 +7,7 @@ export function isCardPayment(t: Tx, accountType: string | null | undefined): bo
   const d = (t.description ?? "").trim().toLowerCase();
   const credit = (accountType ?? "").toUpperCase() === "CREDIT";
   if (credit) return t.amount > 0 && /^(pagamento recebido|pagamento com saldo)/.test(d);
-  return t.amount < 0 && /^pagamento de fatura/.test(d);
+  return t.amount < 0 && /^(pagamento de fatura|fatura paga)/.test(d); // "FATURA PAGA ITAU..." vem do Visor
 }
 
 export function monthSummary(txs: Tx[], typeByAccount: Map<string, string | null>, month: string) {

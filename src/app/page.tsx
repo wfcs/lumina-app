@@ -11,7 +11,7 @@ export default async function DashboardPage() {
   await supabase.rpc("ensure_default_categories");
   await autocategorize();
   const [transactions, connections, categories, investments, loans] = await Promise.all([
-    getTransactions(3000), getConnections(), getUserCategories(), getInvestments(), getDebts(),
+    getTransactions(8000), getConnections(), getUserCategories(), getInvestments(), getDebts(),
   ]);
   return <DashboardReal accounts={accounts} transactions={transactions} connections={connections} categories={categories} investments={investments} loans={loans} />;
 }

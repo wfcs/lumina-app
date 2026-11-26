@@ -23,8 +23,10 @@ export function TransactionsReal({ transactions, categories }: { transactions: D
   const years = useMemo(() => Array.from(new Set(transactions.map((t) => t.date.slice(0, 4)))).sort((a, b) => b.localeCompare(a)), [transactions]);
   const catOptions = useMemo(() => Array.from(new Set(transactions.map((t) => resolver.label(t)))).sort((a, b) => a.localeCompare(b)), [transactions, resolver]);
 
-  const [year, setYear] = useState(years[0] ?? String(new Date().getFullYear()));
-  const [month, setMonth] = useState("all");
+  // Abre no mês atual (o histórico vai de mar/2025 até hoje; listar tudo de uma vez pesa a tela).
+  const nowIso = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(new Date());
+  const [year, setYear] = useState(nowIso.slice(0, 4));
+  const [month, setMonth] = useState(nowIso.slice(5, 7));
   const [cat, setCat] = useState("all");
   const [q, setQ] = useState("");
   const [savingId, setSavingId] = useState<string | null>(null);

@@ -65,8 +65,17 @@ export async function listAccounts(item?: string) {
   return arr(r, "accounts", "results");
 }
 export async function listTransactions(accountId: string, from?: string) {
-  const r = await call("/transactions/list", { account_id: accountId, from, page_size: 500 });
-  return arr(r, "transactions", "results");
+  // Paginação manual: a API devolve `totalPages`; antes só a página 1 (500 itens) era lida
+  // e a conta Itaú perdia os lançamentos mais antigos. Teto de 20 páginas (10 mil) por segurança.
+  const out: any[] = [];
+  for (let page = 1; page <= 20; page++) {
+    const r = await call("/transactions/list", { account_id: accountId, from, page, page_size: 500 });
+    const rows = arr(r, "transactions", "results");
+    out.push(...rows);
+    const total = Number((r as any)?.totalPages ?? (r as any)?.total_pages ?? 1);
+    if (rows.length < 500 || page >= total) break;
+  }
+  return out;
 }
 
 export async function listInvestments(item: string) {

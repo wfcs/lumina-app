@@ -15,7 +15,9 @@ export function ProjectionReal({ accounts, transactions }: { accounts: DbAccount
 
   // Só o que já aconteceu: parcelas lançadas para meses futuros distorciam a média.
   const today = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(new Date());
-  const past = transactions.filter((t) => t.date <= today);
+  // Base: últimos 12 meses (o histórico importado vai até mar/2025; hábitos antigos pesariam demais).
+  const since = `${Number(today.slice(0, 4)) - 1}${today.slice(4, 7)}-01`;
+  const past = transactions.filter((t) => t.date <= today && t.date >= since);
   const months = Array.from(new Set(past.map((t) => t.date.slice(0, 7))));
   const n = Math.max(1, months.length);
   const totalIncome = past.filter((t) => t.amount > 0).reduce((s, t) => s + t.amount, 0);
