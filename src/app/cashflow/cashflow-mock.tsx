@@ -26,7 +26,7 @@ export function CashflowMock() {
         action={
           <div className="inline-flex rounded-lg border border-[var(--border)] p-0.5">
             {periods.map((p) => (
-              <button key={p} onClick={() => setPeriod(p)} className={`px-3 py-1.5 rounded-md text-xs font-medium ${p === period ? "bg-brand text-white" : "text-muted"}`}>{p}</button>
+              <button key={p} onClick={() => setPeriod(p)} className={`px-3 py-1.5 rounded-md text-xs font-medium ${p === period ? "bg-[var(--accent)] text-[var(--on-accent)]" : "text-muted"}`}>{p}</button>
             ))}
           </div>
         }

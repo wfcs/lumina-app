@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { LuminaMark } from "@/components/ui/lumina-mark";
 import {
   LayoutDashboard, ArrowLeftRight, Repeat, TrendingUp, Wallet,
-  Receipt, Tags, Target, LineChart, PiggyBank, X, LogOut,
+  Receipt, Tags, Target, LineChart, PiggyBank, X, LogOut, HandCoins,
 } from "lucide-react";
 
 const nav = [
@@ -16,6 +16,7 @@ const nav = [
   { href: "/cashflow", label: "Fluxo de Caixa", icon: TrendingUp },
   { href: "/accounts", label: "Contas", icon: Wallet },
   { href: "/bills", label: "Faturas", icon: Receipt },
+  { href: "/debts", label: "Dívidas", icon: HandCoins },
   { href: "/categories", label: "Categorias", icon: Tags },
   { href: "/goals", label: "Metas", icon: Target },
   { href: "/projection", label: "Projeção", icon: LineChart },
@@ -54,12 +55,12 @@ export function Sidebar() {
                 onClick={() => setMobileNav(false)}
                 className={cn(
                   "group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all",
-                  active ? "text-white" : "text-muted hover:text-[var(--text)] hover:bg-white/[0.03]"
+                  active ? "text-[var(--text)]" : "text-muted hover:text-[var(--text)] hover:bg-white/[0.03]"
                 )}
               >
                 {active && (
                   <span className="absolute inset-0 rounded-xl border border-[var(--accent)]/30"
-                        style={{ background: "linear-gradient(100deg, rgba(131,50,172,0.20), rgba(224,134,211,0.10))" }} />
+                        style={{ background: "linear-gradient(100deg, rgba(0,210,255,0.16), rgba(255,210,179,0.06))" }} />
                 )}
                 {active && <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-1 rounded-full bg-[var(--mint)] shadow-glow-mint" />}
                 <Icon size={18} className={cn("relative shrink-0", active ? "text-[var(--mint)]" : "")} />
@@ -72,7 +73,7 @@ export function Sidebar() {
         <div className="p-3 space-y-1">
           <Link href="/profile" className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/[0.03] transition-colors">
             <div className="h-9 w-9 rounded-full grid place-items-center text-white font-semibold text-sm"
-                 style={{ background: "linear-gradient(135deg, #7C3AED, #D7B8F3)" }}>F</div>
+                 style={{ background: "var(--accent)", color: "var(--on-accent)" }}>F</div>
             <div className="text-sm leading-tight">
               <div className="font-semibold">Felipe</div>
               <div className="text-muted text-xs">Plano Premium</div>

@@ -11,8 +11,8 @@ export function CategoriesView({ transactions, categories }: { transactions: DbT
     <div>
       <PageHeader title="Categorias" subtitle={tab === "view" ? "Seus gastos por categoria (dados reais)" : "Cadastre e organize categorias e subcategorias"} />
       <div className="inline-flex rounded-lg border border-[var(--border)] p-0.5 mb-4">
-        <button onClick={() => setTab("view")} className={`px-3 py-1.5 rounded-md text-sm font-medium ${tab === "view" ? "bg-brand text-white" : "text-muted"}`}>Visão</button>
-        <button onClick={() => setTab("manage")} className={`px-3 py-1.5 rounded-md text-sm font-medium ${tab === "manage" ? "bg-brand text-white" : "text-muted"}`}>Gerenciar</button>
+        <button onClick={() => setTab("view")} className={`px-3 py-1.5 rounded-md text-sm font-medium ${tab === "view" ? "bg-[var(--accent)] text-[var(--on-accent)]" : "text-muted"}`}>Visão</button>
+        <button onClick={() => setTab("manage")} className={`px-3 py-1.5 rounded-md text-sm font-medium ${tab === "manage" ? "bg-[var(--accent)] text-[var(--on-accent)]" : "text-muted"}`}>Gerenciar</button>
       </div>
       {tab === "view" ? <CategoriesReal transactions={transactions} categories={categories} /> : <CategoryManager categories={categories} />}
     </div>

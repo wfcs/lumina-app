@@ -25,13 +25,13 @@ export function RecurringMock() {
       <PageHeader
         title="Recorrentes"
         subtitle="Contas fixas e parcelas detectadas automaticamente"
-        action={<button className="inline-flex items-center gap-1.5 bg-brand text-white px-3 py-2 rounded-lg text-sm font-medium"><Plus size={16} /> Nova Recorrência</button>}
+        action={<button className="inline-flex items-center gap-1.5 bg-[var(--accent)] text-[var(--on-accent)] px-3 py-2 rounded-lg text-sm font-medium"><Plus size={16} /> Nova Recorrência</button>}
       />
 
       <div className="flex items-center gap-2 mb-4">
         <div className="inline-flex rounded-lg border border-[var(--border)] p-0.5">
-          <button onClick={() => setTab("expense")} className={`px-3 py-1.5 rounded-md text-sm font-medium ${tab === "expense" ? "bg-brand text-white" : "text-muted"}`}>Despesas</button>
-          <button onClick={() => setTab("income")} className={`px-3 py-1.5 rounded-md text-sm font-medium ${tab === "income" ? "bg-brand text-white" : "text-muted"}`}>Receitas</button>
+          <button onClick={() => setTab("expense")} className={`px-3 py-1.5 rounded-md text-sm font-medium ${tab === "expense" ? "bg-[var(--accent)] text-[var(--on-accent)]" : "text-muted"}`}>Despesas</button>
+          <button onClick={() => setTab("income")} className={`px-3 py-1.5 rounded-md text-sm font-medium ${tab === "income" ? "bg-[var(--accent)] text-[var(--on-accent)]" : "text-muted"}`}>Receitas</button>
         </div>
         <div className="ml-auto inline-flex items-center gap-2 text-sm">
           <button className="p-1.5 rounded hover:bg-black/5 dark:hover:bg-white/5"><ChevronLeft size={16} /></button>

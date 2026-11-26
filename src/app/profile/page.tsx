@@ -38,7 +38,7 @@ export default function ProfilePage() {
             <p className="text-sm text-muted mb-3">1 mês de Premium por amigo que assinar.</p>
             <div className="flex gap-2 max-w-sm mx-auto">
               <input readOnly value="lumina.app/r/felipe" className="flex-1 px-3 py-2 rounded-lg border border-[var(--border)] bg-[var(--card)] text-sm" />
-              <button className="bg-brand text-white px-3 py-2 rounded-lg text-sm font-medium">Copiar</button>
+              <button className="bg-[var(--accent)] text-[var(--on-accent)] px-3 py-2 rounded-lg text-sm font-medium">Copiar</button>
             </div>
             <div className="flex justify-center gap-6 mt-4 text-sm">
               <div><div className="font-bold text-lg">3</div><div className="text-muted text-xs">convites aceitos</div></div>

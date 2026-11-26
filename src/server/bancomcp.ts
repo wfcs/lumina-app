@@ -1,5 +1,8 @@
 // Banco MCP (MCP.AI) — agregação Open Finance via Pluggy. Somente leitura.
 import { mapStatus, signedAmount } from "./pluggy";
+import { flattenLoans, txExtras } from "./mappers";
+import { saveExtras } from "./sync-extras";
+import { upsertTransactions } from "./tx-upsert";
 
 const BASE = process.env.BANCOMCP_BASE_URL ?? "https://api.mcp.ai";
 const OF = `${BASE}/api/openfinance`;
@@ -66,6 +69,23 @@ export async function listTransactions(accountId: string, from?: string) {
   return arr(r, "transactions", "results");
 }
 
+export async function listInvestments(item: string) {
+  return arr(await call("/investments/list", { item }), "investments", "results");
+}
+export async function listLoans(item: string) {
+  const loans = flattenLoans(await call("/loans/list", { items: [item] }));
+  if (!loans.length) return [];
+  // A lista não traz saldo devedor nem parcelas: busca o detalhe (1–50 contratos por chamada).
+  const ids = loans.map((l) => String(l.id ?? l.loan_id));
+  const detail = await call("/loans/detail", { loan_ids: ids.slice(0, 50) }).catch(() => null);
+  const byId = new Map<string, any>();
+  for (const d of arr(detail, "results")) if (d?.loan?.id) byId.set(String(d.loan.id), d.loan);
+  return loans.map((l) => byId.get(String(l.id ?? l.loan_id)) ?? l);
+}
+export async function listBills(accountId: string) {
+  return arr(await call("/credit-card-bills/list", { account_id: accountId }), "bills", "results");
+}
+
 export async function disconnectBank(item: string) {
   return call("/connections/disconnect", { item });
 }
@@ -96,6 +116,7 @@ export async function syncBancoMcp(supabase: any, userId: string) {
     if (connErr) throw connErr;
 
     const accounts = await listAccounts(itemId);
+    const bills: { accountId: string; bill: any }[] = [];
     for (const a of accounts) {
       const accId = a.id ?? a.account_id ?? a.uuid;
       if (!accId) continue;
@@ -139,17 +160,46 @@ export async function syncBancoMcp(supabase: any, userId: string) {
               date: String(t.date ?? t.postedAt ?? "").slice(0, 10),
               category: t.category ?? t.categoryName ?? null,
               currency: t.currencyCode ?? t.currency ?? "BRL",
+              ...txExtras(t),
             };
           }).filter((r: any) => r.date && r.pluggy_transaction_id !== "bancomcp:undefined");
           if (rows.length) {
-            const { error: txErr } = await supabase
-              .from("transactions").upsert(rows, { onConflict: "pluggy_transaction_id" });
-            if (txErr) throw txErr;
+            await upsertTransactions(supabase, rows);
             txCount += rows.length;
           }
         }
       } catch { /* extrato pode estar coletando ainda */ }
+
+      if (String(a.type ?? "").toUpperCase() === "CREDIT") {
+        try {
+          for (const bill of await listBills(accId)) bills.push({ accountId: savedAcc.id, bill });
+        } catch { /* faturas opcionais */ }
+      }
     }
+
+    // Investimentos, empréstimos e faturas (Fase 0). Falha aqui não derruba o sync principal.
+    try {
+      const [investments, loans] = await Promise.all([
+        listInvestments(itemId).catch(() => []),
+        listLoans(itemId).catch(() => []),
+      ]);
+      const saved = await saveExtras(supabase, userId, conn.id, { investments, loans, bills });
+      if (saved.errors) console.warn("[bancomcp] extras com erro:", saved.errors.join("; "));
+    } catch (e) {
+      console.warn("[bancomcp] extras ignorados:", (e as Error)?.message);
+    }
+  }
+  // Conexões que sumiram do agregador ficam com saldo congelado: marca como desconectadas
+  // (histórico de transações é preservado; as telas deixam de somar essas contas).
+  const live = connections.map((c: any) => `bancomcp:${c.item_id ?? c.connector_id ?? String(c.id ?? "")}`);
+  if (live.length) {
+    const { error: staleErr } = await supabase
+      .from("connections")
+      .update({ status: "disconnected" })
+      .eq("user_id", userId)
+      .like("pluggy_item_id", "bancomcp:%")
+      .not("pluggy_item_id", "in", `(${live.map((x: string) => `"${x}"`).join(",")})`);
+    if (staleErr) console.warn("[bancomcp] marcar conexões antigas:", staleErr.message);
   }
   return { connections: connections.length, accounts: accCount, transactions: txCount };
 }

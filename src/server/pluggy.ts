@@ -56,6 +56,19 @@ export async function getTransactions(accountId: string, apiKey: string) {
   return (data.results ?? []) as any[];
 }
 
+export async function getInvestments(itemId: string, apiKey: string) {
+  const data = await apiGet(`/investments?itemId=${itemId}&pageSize=500`, apiKey);
+  return (data.results ?? []) as any[];
+}
+export async function getLoans(itemId: string, apiKey: string) {
+  const data = await apiGet(`/loans?itemId=${itemId}`, apiKey);
+  return (data.results ?? []) as any[];
+}
+export async function getBills(accountId: string, apiKey: string) {
+  const data = await apiGet(`/bills?accountId=${accountId}`, apiKey);
+  return (data.results ?? []) as any[];
+}
+
 // Mapeia status do Pluggy para o nosso (updated | unstable | expired)
 export function mapStatus(pluggyStatus?: string): "updated" | "unstable" | "expired" {
   switch (pluggyStatus) {

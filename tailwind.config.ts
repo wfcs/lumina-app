@@ -6,15 +6,15 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        brand: { DEFAULT: "#7C3AED", 600: "#7C3AED", 700: "#6D28D9" },
-        indigo2: "#6D28D9",
-        violet2: "#D7B8F3",
+        brand: { DEFAULT: "#00D2FF", 600: "#00B8E0", 700: "#0096B8" },
+        indigo2: "#1C1747",
+        violet2: "#FFD2B3",
         mint: "#4FCE9A",
-        peach: "#C9A9FF",
+        peach: "#FFD2B3",
         positive: "#4FCE9A",
         danger: "#F0839F",
-        warn: "#C79BEA",
-        neutral: "#A99FC6",
+        warn: "#FFB37A",
+        neutral: "#A9A5CF",
       },
       fontFamily: {
         sans: ["Manrope", "system-ui", "sans-serif"],
@@ -22,9 +22,9 @@ const config: Config = {
       },
       borderRadius: { xl: "1rem", "2xl": "1.25rem" },
       boxShadow: {
-        glow: "0 0 0 1px rgba(168,85,247,0.32), 0 8px 40px -8px rgba(168,85,247,0.5)",
+        glow: "0 0 0 1px rgba(0,210,255,0.30), 0 8px 40px -8px rgba(0,210,255,0.45)",
         "glow-mint": "0 0 28px -4px rgba(79,206,154,0.5)",
-        "glow-violet": "0 0 30px -4px rgba(215,184,243,0.55)",
+        "glow-violet": "0 0 30px -4px rgba(0,210,255,0.45)",
         card: "0 1px 0 0 rgba(255,255,255,0.03) inset, 0 12px 32px -16px rgba(0,0,0,0.6)",
       },
       keyframes: {

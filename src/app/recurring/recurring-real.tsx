@@ -84,8 +84,8 @@ export function RecurringReal({ transactions, categories }: { transactions: DbTr
       </div>
 
       <div className="inline-flex rounded-lg border border-[var(--border)] p-0.5 mb-4">
-        <button onClick={() => setTab("expense")} className={`px-3 py-1.5 rounded-md text-sm font-medium ${tab === "expense" ? "bg-brand text-white" : "text-muted"}`}>Despesas ({expense.length})</button>
-        <button onClick={() => setTab("income")} className={`px-3 py-1.5 rounded-md text-sm font-medium ${tab === "income" ? "bg-brand text-white" : "text-muted"}`}>Receitas ({income.length})</button>
+        <button onClick={() => setTab("expense")} className={`px-3 py-1.5 rounded-md text-sm font-medium ${tab === "expense" ? "bg-[var(--accent)] text-[var(--on-accent)]" : "text-muted"}`}>Despesas ({expense.length})</button>
+        <button onClick={() => setTab("income")} className={`px-3 py-1.5 rounded-md text-sm font-medium ${tab === "income" ? "bg-[var(--accent)] text-[var(--on-accent)]" : "text-muted"}`}>Receitas ({income.length})</button>
       </div>
 
       <Card className="p-0 overflow-hidden">

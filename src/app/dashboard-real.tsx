@@ -10,7 +10,7 @@ import { brl } from "@/lib/format";
 import { makeResolver } from "@/lib/cat-resolve";
 import { ArrowRight, ArrowUpRight, Command, Sparkles, Wallet } from "lucide-react";
 
-const PALETTE = ["#7C3AED", "#D7B8F3", "#4FCE9A", "#B8B8F3", "#A855F7", "#4FCE9A", "#F4B860", "#F0839F", "#0EA5E9", "#EAB308"];
+const PALETTE = ["#00D2FF", "#FFD2B3", "#4FCE9A", "#8C84D8", "#7FE6FF", "#F4B860", "#F0839F", "#E8A383", "#5B8DEF", "#C9C4F2"];
 const pad = (n: number) => String(n).padStart(2, "0");
 const clamp01 = (n: number) => Math.max(0, Math.min(1, n));
 
@@ -123,7 +123,7 @@ export function DashboardReal({ accounts, transactions, connections, categories 
 
       {/* HERO — Saúde financeira */}
       <div className="card p-5 animate-fade-up relative overflow-hidden">
-        <div className="orb h-72 w-72 -top-24 -right-16" style={{ background: "radial-gradient(circle, #7C3AED, transparent 70%)" }} />
+        <div className="orb h-72 w-72 -top-24 -right-16" style={{ background: "radial-gradient(circle, #00D2FF, transparent 70%)" }} />
         <div className="relative grid lg:grid-cols-[1.3fr_1fr] gap-6 items-center">
           <div>
             <Badge tone={delta >= 0 ? "positive" : "danger"}>{delta >= 0 ? "No azul este mês" : "No vermelho este mês"}</Badge>
@@ -301,15 +301,14 @@ export function DashboardReal({ accounts, transactions, connections, categories 
         </BentoCard>
 
         {/* Insight */}
-        <Link href="/transactions" className="lg:col-span-6 card p-5 animate-fade-up relative overflow-hidden text-[#F2ECFA]"
-          style={{ background: "linear-gradient(135deg,#7C3AED,#1F1832)" }}>
+        <Link href="/transactions" className="lg:col-span-6 card card-peach p-5 animate-fade-up relative overflow-hidden">
           <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] opacity-85 mb-3">
             <Sparkles size={14} /> Insight
           </div>
           <p className="text-sm leading-relaxed max-w-2xl">
             {topCats.length > 0
-              ? <>Sua maior despesa do mês é <b className="text-[#D7B8F3]">{topCats[0].name}</b> ({brl(topCats[0].value)}). Definir um limite ajuda a manter o resultado no azul.</>
-              : <>Conecte mais contas ou registre transações para receber <b className="text-[#D7B8F3]">insights personalizados</b> sobre seus gastos.</>}
+              ? <>Sua maior despesa do mês é <b>{topCats[0].name}</b> ({brl(topCats[0].value)}). Definir um limite ajuda a manter o resultado no azul.</>
+              : <>Conecte mais contas ou registre transações para receber <b>insights personalizados</b> sobre seus gastos.</>}
           </p>
           <p className="text-xs opacity-80 mt-3 flex items-center gap-1">Ver transações <ArrowRight size={13} /></p>
         </Link>
@@ -359,7 +358,7 @@ function InstDot({ conn, size = 20 }: { conn?: DbConnection; size?: number }) {
     return <img src={conn.institution_image} alt={name} className="rounded-lg shrink-0 object-cover" style={{ width: size, height: size }} />;
   }
   return (
-    <div className="rounded-lg grid place-items-center text-white shrink-0 font-bold bg-[var(--accent)]"
+    <div className="rounded-lg grid place-items-center text-[var(--on-accent)] shrink-0 font-bold bg-[var(--accent)]"
       style={{ width: size, height: size, fontSize: size * 0.45 }} title={name || "Conta"}>
       {(name || "•").charAt(0).toUpperCase()}
     </div>

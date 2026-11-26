@@ -14,6 +14,7 @@ const statusMap: Record<string, { tone: "positive" | "warn" | "danger"; label: s
   updated: { tone: "positive", label: "Atualizado" },
   unstable: { tone: "warn", label: "Atualizando" },
   expired: { tone: "danger", label: "Expirado" },
+  disconnected: { tone: "danger", label: "Desconectada" },
 };
 
 function Logo({ url, size = 28 }: { url: string | null; size?: number }) {
@@ -53,7 +54,7 @@ export function AccountsReal({ accounts, connections }: { accounts: DbAccount[];
   return (
     <div>
       <PageHeader title="Contas" subtitle="Tudo que está conectado via Open Finance" action={
-        <a href="/connect" className="inline-flex items-center gap-1.5 text-white px-3 py-2 rounded-xl text-sm font-semibold" style={{ background: "linear-gradient(135deg, #7C3AED, #D7B8F3)" }}><Plus size={16} /> Adicionar banco</a>
+        <a href="/connect" className="inline-flex items-center gap-1.5 text-white px-3 py-2 rounded-xl text-sm font-semibold" style={{ background: "var(--accent)", color: "var(--on-accent)" }}><Plus size={16} /> Adicionar banco</a>
       } />
 
       {cards.length > 0 && (

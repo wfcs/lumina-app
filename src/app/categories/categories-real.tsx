@@ -7,8 +7,8 @@ import { makeResolver } from "@/lib/cat-resolve";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { brl } from "@/lib/format";
 
-const tt = { background: "#16111F", border: "1px solid #2C2344", borderRadius: 12, color: "#F2ECFA", fontSize: 12 };
-const PALETTE = ["#7C3AED", "#D7B8F3", "#4FCE9A", "#B8B8F3", "#A855F7", "#4FCE9A", "#F4B860", "#F0839F", "#0EA5E9", "#EAB308", "#22C55E", "#A855F7"];
+const tt = { background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12, color: "var(--text)", fontSize: 12 };
+const PALETTE = ["#00D2FF", "#FFD2B3", "#4FCE9A", "#8C84D8", "#7FE6FF", "#F4B860", "#F0839F", "#E8A383", "#5B8DEF", "#C9C4F2"];
 const MESES = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
 const selectCls = "h-9 px-3 rounded-xl border border-[var(--border)] bg-[var(--card-2)] text-sm text-[var(--text)] outline-none focus:border-[var(--accent)]";
 const pad = (n: number) => String(n).padStart(2, "0");

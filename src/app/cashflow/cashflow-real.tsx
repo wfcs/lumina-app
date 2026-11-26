@@ -9,8 +9,8 @@ import { brl } from "@/lib/format";
 import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import { TrendingUp, TrendingDown } from "lucide-react";
 
-const tt = { background: "#16111F", border: "1px solid #2C2344", borderRadius: 12, color: "#F2ECFA", fontSize: 12 };
-const PALETTE = ["#7C3AED", "#D7B8F3", "#4FCE9A", "#B8B8F3", "#A855F7", "#4FCE9A", "#F4B860", "#F0839F"];
+const tt = { background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12, color: "var(--text)", fontSize: 12 };
+const PALETTE = ["#00D2FF", "#FFD2B3", "#4FCE9A", "#8C84D8", "#7FE6FF", "#F4B860", "#F0839F", "#E8A383", "#5B8DEF", "#C9C4F2"];
 
 export function CashflowReal({ transactions, categories }: { transactions: DbTransaction[]; categories: UserCategory[] }) {
   const resolver = makeResolver(categories);
@@ -82,7 +82,7 @@ export function CashflowReal({ transactions, categories }: { transactions: DbTra
             {byCat.map((c) => {
               const size = Math.max(90, (c.value / byCat[0].value) * 220);
               return (
-                <div key={c.name} className="rounded-lg p-3 text-white flex flex-col justify-between" style={{ background: c.color, width: size, minHeight: 92 }}>
+                <div key={c.name} className="rounded-lg p-3 text-[#1C1747] flex flex-col justify-between" style={{ background: c.color, width: size, minHeight: 92 }}>
                   <span className="text-xs font-medium opacity-90 truncate">{c.name}</span>
                   <Money value={c.value} className="font-bold" />
                 </div>

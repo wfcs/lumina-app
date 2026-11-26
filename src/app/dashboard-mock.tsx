@@ -88,7 +88,7 @@ export function DashboardMock() {
 
       {/* HERO — Saúde financeira */}
       <Card className="relative overflow-hidden">
-        <div className="orb h-72 w-72 -top-24 -right-16" style={{ background: "radial-gradient(circle, #7C3AED, transparent 70%)" }} />
+        <div className="orb h-72 w-72 -top-24 -right-16" style={{ background: "radial-gradient(circle, #00D2FF, transparent 70%)" }} />
         <div className="relative grid lg:grid-cols-[1.3fr_1fr] gap-6 items-center">
           <div>
             <Badge tone={net >= 0 ? "positive" : "danger"}>{net >= 0 ? "No azul este mês" : "No vermelho este mês"}</Badge>

@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { activeAccounts } from "./active-accounts";
 
 export interface DbAccount {
   id: string; connection_id: string; type: string | null; subtype: string | null;
@@ -32,10 +33,11 @@ export async function getConnections(): Promise<DbConnection[]> {
 
 export async function getAccounts(): Promise<DbAccount[]> {
   const supabase = createClient();
-  const { data } = await supabase
-    .from("accounts")
-    .select("id, connection_id, type, subtype, name, number, balance, credit_limit, currency");
-  return data ?? [];
+  const [{ data }, { data: conns }] = await Promise.all([
+    supabase.from("accounts").select("id, connection_id, type, subtype, name, number, balance, credit_limit, currency"),
+    supabase.from("connections").select("id, status"),
+  ]);
+  return activeAccounts(data ?? [], conns ?? []);
 }
 
 export async function getTransactions(limit = 200): Promise<DbTransaction[]> {
@@ -65,4 +67,24 @@ export async function getCardSettings(): Promise<CardSetting[]> {
   const supabase = createClient();
   const { data } = await supabase.from("card_settings").select("account_id, closing_day, due_day");
   return data ?? [];
+}
+
+export interface DbDebt {
+  id: string; name: string; outstanding_balance: number; rate: number | null;
+  installments_total: number | null; installments_paid: number | null;
+  installment_amount: number | null; due_date: string | null; updated_at: string | null;
+}
+export async function getDebts(): Promise<DbDebt[]> {
+  const supabase = createClient();
+  const { data } = await supabase
+    .from("debts")
+    .select("id, name, outstanding_balance, rate, installments_total, installments_paid, installment_amount, due_date, updated_at");
+  return (data ?? []).map((d: any) => ({ ...d, outstanding_balance: Number(d.outstanding_balance), rate: d.rate == null ? null : Number(d.rate) }));
+}
+
+export interface DbCardBill { account_id: string; due_date: string | null; total_amount: number; status: string }
+export async function getCardBills(): Promise<DbCardBill[]> {
+  const supabase = createClient();
+  const { data } = await supabase.from("card_bills").select("account_id, due_date, total_amount, status");
+  return (data ?? []).map((b: any) => ({ ...b, total_amount: Number(b.total_amount) }));
 }

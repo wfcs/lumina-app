@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { parseStatement } from "@/server/statement-parser";
+import { upsertTransactions } from "@/server/tx-upsert";
 
 // POST /api/import  (multipart: file)
 // Importa um extrato OFX/CSV → conexão "manual" + conta + transações.
@@ -74,11 +75,9 @@ export async function POST(request: Request) {
       date: t.date,
       category: null,
       currency: parsed.currency,
+      source: "import",
     }));
-    const { error: txErr } = await supabase
-      .from("transactions")
-      .upsert(rows, { onConflict: "pluggy_transaction_id" });
-    if (txErr) throw txErr;
+    await upsertTransactions(supabase, rows);
 
     return NextResponse.json({ ok: true, account: parsed.accountName, transactions: rows.length });
   } catch (e) {

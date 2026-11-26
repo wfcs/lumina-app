@@ -1,6 +1,9 @@
 import {
-  getApiKey, getItem, getAccounts, getTransactions, mapStatus, signedAmount,
+  getApiKey, getItem, getAccounts, getTransactions, getInvestments, getLoans, getBills, mapStatus, signedAmount,
 } from "./pluggy";
+import { txExtras } from "./mappers";
+import { saveExtras } from "./sync-extras";
+import { upsertTransactions } from "./tx-upsert";
 
 type DB = any; // SupabaseClient com sessão do usuário
 
@@ -29,6 +32,7 @@ export async function syncItem(supabase: DB, userId: string, itemId: string, api
   if (connErr) throw connErr;
 
   const accounts = await getAccounts(itemId, apiKey);
+  const bills: { accountId: string; bill: any }[] = [];
   let txCount = 0;
   let txPending = false;
 
@@ -67,16 +71,31 @@ export async function syncItem(supabase: DB, userId: string, itemId: string, api
           date: (t.date ?? "").slice(0, 10),
           category: t.category ?? null,
           currency: t.currencyCode ?? "BRL",
+          ...txExtras(t),
         }));
-        const { error: txErr } = await supabase
-          .from("transactions")
-          .upsert(rows, { onConflict: "pluggy_transaction_id" });
-        if (txErr) throw txErr;
+        await upsertTransactions(supabase, rows);
         txCount += rows.length;
       }
     } catch {
       txPending = true;
     }
+
+    if (acc.type === "CREDIT") {
+      try {
+        for (const bill of await getBills(acc.id, apiKey)) bills.push({ accountId: savedAcc.id, bill });
+      } catch { /* faturas opcionais */ }
+    }
+  }
+
+  // Investimentos, empréstimos e faturas (Fase 0). Falha aqui não derruba o sync principal.
+  try {
+    const [investments, loans] = await Promise.all([
+      getInvestments(itemId, apiKey).catch(() => []),
+      getLoans(itemId, apiKey).catch(() => []),
+    ]);
+    await saveExtras(supabase, userId, conn.id, { investments, loans, bills });
+  } catch (e) {
+    console.warn("[sync] extras ignorados:", (e as Error)?.message);
   }
 
   return { accounts: accounts.length, transactions: txCount, transactionsPending: txPending || !itemReady };
