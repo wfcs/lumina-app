@@ -1,15 +1,15 @@
-# Sincronização automática do Open Finance (8x/dia)
+# Sincronização automática do Open Finance
 
 O endpoint `GET /api/cron/sync` sincroniza o Open Finance (Banco MCP) de quem tem
-conexão. Protegido por `CRON_SECRET`. Agendado para **8x/dia (a cada 3h)**:
-`00:00, 03:00, 06:00, 09:00, 12:00, 15:00, 18:00, 21:00`.
+conexão. Protegido por `CRON_SECRET`. No `vercel.json` roda **1x/dia, às 08h de Brasília (11h UTC)**, limite do plano
+Hobby. Para mais frequência, use a Opção B/C. O botão ↻ do app sincroniza na hora.
 
 Defina um `CRON_SECRET` forte no `.env.local` e na Vercel.
 
-## Opção A — Vercel Cron (requer plano Pro)
+## Opção A — Vercel Cron (em uso: 1x/dia no Hobby)
 Já incluído no `vercel.json`:
 ```json
-{ "crons": [ { "path": "/api/cron/sync", "schedule": "0 */3 * * *" } ] }
+{ "crons": [ { "path": "/api/cron/sync", "schedule": "0 11 * * *" } ] }
 ```
 A Vercel envia `Authorization: Bearer <CRON_SECRET>` automaticamente quando o
 `CRON_SECRET` existe no projeto. **No plano Hobby (grátis) o cron roda só 1x/dia** —

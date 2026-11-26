@@ -4,7 +4,7 @@ import { bancoMcpConfigured, syncBancoMcp } from "@/server/bancomcp";
 
 // GET /api/cron/sync — sincroniza o Open Finance (Banco MCP) de todos os usuários
 // que têm conexões. Protegido por CRON_SECRET.
-// Agendado 8x/dia (a cada 3h) via vercel.json ou cron externo (ver docs/CRON_SETUP.md).
+// Agendado 1x/dia (08h BRT) via vercel.json — limite do plano Hobby — ou cron externo (ver docs/CRON_SETUP.md).
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
