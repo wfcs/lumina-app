@@ -95,7 +95,7 @@ export function TransactionsReal({ transactions, categories }: { transactions: D
             <AnimatedList as="tbody">
               {rows.length === 0 && <tr><td colSpan={4} className="p-6 text-center text-muted">Nenhuma transação para este filtro.</td></tr>}
               {rows.map((t) => (
-                <tr key={t.id} className="border-b border-[var(--border)] last:border-0 hover:bg-white/[0.02]">
+                <tr key={t.id} className="border-b border-[var(--border)] last:border-0 hover:bg-[var(--card-2)]">
                   <td className="p-3">
                     <div className="font-medium">{t.description || "—"}</div>
                     <div className="text-xs text-muted sm:hidden">{shortDate(t.date)}</div>

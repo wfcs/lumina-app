@@ -7,6 +7,13 @@ import { loanLabel } from "@/lib/labels";
 import { CountUp } from "@/components/fx/count-up";
 import { BorderGlow } from "@/components/fx/border-glow";
 import { Info } from "lucide-react";
+import { SettleLine, AmortizeBox, type SettleView, type AmortView } from "./settle-ui";
+import type { Tx } from "@/lib/settle";
+
+export type SettleData = {
+  bills: Record<string, SettleView>; installments: Record<string, SettleView>;
+  amortizations: Record<string, AmortView>; allOut: Tx[]; monthLabel: string;
+};
 
 // Formatos pt-BR (biblioteca visual, com desvio aprovado: 1 casa na casa do mil).
 const nf = (d: number) => new Intl.NumberFormat("pt-BR", { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -39,24 +46,32 @@ function Bar({ share, color, track = "var(--card-2)", h = 6 }: { share: number; 
 function Pill({ tone, children }: { tone: "danger" | "accent" | "neutral"; children: React.ReactNode }) {
   const cls = tone === "danger" ? "bg-danger/12 text-danger border-danger/20"
     : tone === "accent" ? "bg-[var(--accent)]/12 text-[var(--accent)] border-[var(--accent)]/25"
-    : "bg-white/[0.04] text-muted border-[var(--border)]";
+    : "bg-[var(--card-2)] text-muted border-[var(--border)]";
   return <span className={`inline-flex self-start shrink-0 px-2 py-0.5 rounded-full text-[11px] font-semibold border whitespace-nowrap ${cls}`}>{children}</span>;
 }
 
-function RankRow({ item, pos, mask }: { item: RankItem; pos: number; mask: (s: string) => string }) {
+function RankRow({ item, pos, mask, settle }: { item: RankItem; pos: number; mask: (s: string) => string; settle: SettleData }) {
   const focus = item.kind === "bills" || item.action === "amortizar";
   return (
     <div className="flex gap-3 py-3 border-b border-[var(--border)] last:border-0">
       <span className="grid place-items-center h-6 w-6 shrink-0 rounded-full text-[11px] font-semibold"
-        style={focus ? { background: "var(--accent)", color: "var(--on-accent)" } : { background: "var(--card-2)", color: "var(--muted)" }}>{pos}</span>
+        style={focus ? { background: "var(--accent-fill)", color: "var(--on-accent)" } : { background: "var(--card-2)", color: "var(--muted)" }}>{pos}</span>
       {item.kind === "bills" ? (
         <div className="flex-1 min-w-0 text-sm">
-          <div className="flex items-start justify-between gap-3"><div>{item.action === "confirmar" ? "Confirmar faturas: " : "Pagar o total no vencimento: "}
-            {item.bills.map((b, i) => (
-              <span key={i}>{i > 0 && " e "}{b.institution} {mask(reais(b.total_amount))} ({item.action === "confirmar" ? "venceu" : "vence"} {dmy(b.due_date)})</span>
-            ))}
-          </div>{item.action === "confirmar" && <Pill tone="danger">Confirmar</Pill>}</div>
-          <div className="text-xs text-muted mt-0.5">Rotativo é o crédito mais caro; a taxa do cartão não vem no Open Finance{item.action === "confirmar" ? ". O pagamento ainda não apareceu: confira no app do banco" : ""}.</div>
+          <div className="flex items-start justify-between gap-3">
+            <div>{item.action === "confirmar" ? "Faturas vencidas sem pagamento identificado" : "Pagar o total no vencimento"}</div>
+            {item.action === "confirmar" && <Pill tone="danger">Dar baixa</Pill>}
+          </div>
+          <div className="text-xs text-muted mt-0.5">Rotativo é o crédito mais caro; a taxa do cartão não vem no Open Finance. Se já pagou, aponte a transação.</div>
+          {item.bills.map((b) => {
+            const key = `${b.account_id}:${b.due_date}`;
+            return (
+              <div key={key} className="mt-2 pt-2 border-t border-[var(--border)] first:border-0">
+                <div className="text-sm">{b.institution} {mask(reais(b.total_amount))} · {item.action === "confirmar" ? "venceu" : "vence"} {dmy(b.due_date)}</div>
+                {settle.bills[key] && <SettleLine v={settle.bills[key]} all={settle.allOut} />}
+              </div>
+            );
+          })}
         </div>
       ) : (
         <div className="flex-1 min-w-0 text-sm">
@@ -69,7 +84,10 @@ function RankRow({ item, pos, mask }: { item: RankItem; pos: number; mask: (s: s
             <span className="text-xs text-muted num w-28 text-right shrink-0">{pct(item.interestShare)} dos juros</span>
           </div>
           {item.action === "amortizar" && (
-            <div className="text-xs text-muted mt-1">Cada R$ 1.000 amortizados = {mask(reais(item.savingPer1000))} a menos de juros por mês.</div>
+            <>
+              <div className="text-xs text-muted mt-1">Cada R$ 1.000 amortizados = {mask(reais(item.savingPer1000))} a menos de juros por mês.</div>
+              {settle.amortizations[item.loanId] && <AmortizeBox debtId={item.loanId} v={settle.amortizations[item.loanId]} all={settle.allOut} />}
+            </>
           )}
         </div>
       )}
@@ -77,7 +95,7 @@ function RankRow({ item, pos, mask }: { item: RankItem; pos: number; mask: (s: s
   );
 }
 
-export function DebtsReal({ plan, asOf, banks }: { plan: DebtPlan; asOf: string | null; banks: string[] }) {
+export function DebtsReal({ plan, asOf, banks, settle }: { plan: DebtPlan; asOf: string | null; banks: string[]; settle: SettleData }) {
   const mask = useMask();
   const k = plan.kpis;
   const top = plan.ranking.find((r) => r.kind === "loan");
@@ -110,8 +128,17 @@ export function DebtsReal({ plan, asOf, banks }: { plan: DebtPlan; asOf: string 
           <div className="font-semibold">Ordem recomendada</div>
           <div className="text-xs text-muted mb-1">O que pagar primeiro?</div>
           {plan.ranking.map((r, i) => i === 0
-            ? <BorderGlow key={i} className="px-3 -mx-3 my-1"><RankRow item={r} pos={1} mask={mask} /></BorderGlow>
-            : <RankRow key={i} item={r} pos={i + 1} mask={mask} />)}
+            ? <BorderGlow key={i} className="px-3 -mx-3 my-1"><RankRow item={r} pos={1} mask={mask} settle={settle} /></BorderGlow>
+            : <RankRow key={i} item={r} pos={i + 1} mask={mask} settle={settle} />)}
+          {plan.settledBills.length > 0 && (
+            <div className="mt-2 pt-3 border-t border-[var(--border)]">
+              <div className="text-xs text-muted mb-1">Faturas já pagas (baixadas)</div>
+              {plan.settledBills.map((b) => {
+                const key = `${b.account_id}:${b.due_date}`;
+                return settle.bills[key] ? <SettleLine key={key} v={settle.bills[key]} all={settle.allOut} label={`${b.institution} ${reais(b.total_amount)} (venc. ${dmy(b.due_date)})`} /> : null;
+              })}
+            </div>
+          )}
         </Card>
       )}
 
@@ -125,6 +152,7 @@ export function DebtsReal({ plan, asOf, banks }: { plan: DebtPlan; asOf: string 
               <div className="flex justify-between gap-3"><span className="truncate">{loanLabel(l.name)} · {pct(l.rate ?? 0, 2)} a.m.</span><span className="num font-semibold">{mask(reais(l.outstanding_balance))}</span></div>
               <div className="my-1.5"><Bar share={l.paidShare} color="var(--accent)" track="color-mix(in srgb, var(--accent) 30%, transparent)" h={8} /></div>
               <div className="text-xs text-muted">{l.installments_paid ?? 0} de {l.installments_total ?? "?"} pagas · parcela {l.installmentEstimated ? "est. " : ""}{mask(reais(l.installment))} · fim {my(l.due_date)}</div>
+              {settle.installments[l.id] && <SettleLine v={settle.installments[l.id]} all={settle.allOut} label={`Parcela de ${settle.monthLabel}`} />}
             </div>
           ))}
           <div className="text-xs text-muted pt-2">Cheio = parcelas pagas · claro = restantes{plan.paidOffLoans.length > 0 && ` · ${plan.paidOffLoans.length} contrato(s) quitado(s) oculto(s)`}</div>

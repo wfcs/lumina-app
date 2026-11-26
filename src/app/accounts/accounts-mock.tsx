@@ -22,7 +22,7 @@ export function AccountsMock() {
 
   return (
     <div>
-      <PageHeader title="Contas" subtitle="Tudo que está conectado via Open Finance" action={<button className="inline-flex items-center gap-1.5 bg-[var(--accent)] text-[var(--on-accent)] px-3 py-2 rounded-lg text-sm font-medium"><Plus size={16} /> Adicionar conta</button>} />
+      <PageHeader title="Contas" subtitle="Tudo que está conectado via Open Finance" action={<button className="inline-flex items-center gap-1.5 bg-[var(--accent-fill)] text-[var(--on-accent)] px-3 py-2 rounded-lg text-sm font-medium"><Plus size={16} /> Adicionar conta</button>} />
 
       {showBanner && unstable.length > 0 && (
         <div className="rounded-xl border border-warn/40 bg-warn/5 p-4 mb-5">

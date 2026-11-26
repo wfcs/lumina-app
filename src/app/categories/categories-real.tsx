@@ -103,7 +103,7 @@ export function CategoriesReal({ transactions, categories }: { transactions: DbT
                   <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ background: c.color }} />
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between text-sm mb-1"><span className="truncate">{c.name}</span><Money value={c.value} className="font-semibold" /></div>
-                    <div className="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden"><div className="h-full rounded-full" style={{ width: `${(c.value / max) * 100}%`, background: c.color }} /></div>
+                    <div className="h-1.5 w-full rounded-full bg-[var(--card-2)] overflow-hidden"><div className="h-full rounded-full" style={{ width: `${(c.value / max) * 100}%`, background: c.color }} /></div>
                   </div>
                   <span className="text-xs text-muted num w-10 text-right">{Math.round((c.value / total) * 100)}%</span>
                 </div>

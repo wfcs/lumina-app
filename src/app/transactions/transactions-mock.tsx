@@ -87,7 +87,7 @@ export function TransactionsMock() {
                 const acc = accounts.find((a) => a.id === t.accountId);
                 const cat = catById(t.categoryId);
                 return (
-                  <tr key={t.id} className="border-b border-[var(--border)] last:border-0 hover:bg-black/[0.02] dark:hover:bg-white/[0.02]">
+                  <tr key={t.id} className="border-b border-[var(--border)] last:border-0 hover:bg-black/[0.02] dark:hover:bg-[var(--card-2)]">
                     <td className="p-3"><input type="checkbox" /></td>
                     <td className="p-3">
                       <div className="flex items-center gap-2">

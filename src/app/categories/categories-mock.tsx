@@ -21,11 +21,11 @@ export function CategoriesMock() {
 
   return (
     <div>
-      <PageHeader title="Categorias" subtitle="Defina limites e acompanhe cada grupo de gasto" action={<button className="inline-flex items-center gap-1.5 bg-[var(--accent)] text-[var(--on-accent)] px-3 py-2 rounded-lg text-sm font-medium"><Plus size={16} /> Nova Categoria</button>} />
+      <PageHeader title="Categorias" subtitle="Defina limites e acompanhe cada grupo de gasto" action={<button className="inline-flex items-center gap-1.5 bg-[var(--accent-fill)] text-[var(--on-accent)] px-3 py-2 rounded-lg text-sm font-medium"><Plus size={16} /> Nova Categoria</button>} />
 
       <div className="inline-flex rounded-lg border border-[var(--border)] p-0.5 mb-5">
         {[["cat", "Categorias"], ["tags", "Tags"], ["auto", "Automações"]].map(([k, l]) => (
-          <button key={k} onClick={() => setTab(k as any)} className={`px-3 py-1.5 rounded-md text-sm font-medium ${tab === k ? "bg-[var(--accent)] text-[var(--on-accent)]" : "text-muted"}`}>{l}</button>
+          <button key={k} onClick={() => setTab(k as any)} className={`px-3 py-1.5 rounded-md text-sm font-medium ${tab === k ? "bg-[var(--accent-fill)] text-[var(--on-accent)]" : "text-muted"}`}>{l}</button>
         ))}
       </div>
 

@@ -33,7 +33,7 @@ export function PortfolioMock() {
             <div className="text-xs text-muted mt-1">Ativos {brl(ativos)} · Dívidas {brl(dividas)}</div>
           </div>
         </div>
-        <div className="flex gap-1 mb-2">{ranges.map((r) => <button key={r} onClick={() => setRange(r)} className={`px-2.5 py-1 rounded text-xs font-medium ${r === range ? "bg-[var(--accent)] text-[var(--on-accent)]" : "text-muted"}`}>{r}</button>)}</div>
+        <div className="flex gap-1 mb-2">{ranges.map((r) => <button key={r} onClick={() => setRange(r)} className={`px-2.5 py-1 rounded text-xs font-medium ${r === range ? "bg-[var(--accent-fill)] text-[var(--on-accent)]" : "text-muted"}`}>{r}</button>)}</div>
         <div className="h-48">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={netWorthHistory}>
@@ -47,8 +47,8 @@ export function PortfolioMock() {
       </Card>
 
       <div className="inline-flex rounded-lg border border-[var(--border)] p-0.5 mb-5">
-        <button onClick={() => setTab("assets")} className={`px-3 py-1.5 rounded-md text-sm font-medium ${tab === "assets" ? "bg-[var(--accent)] text-[var(--on-accent)]" : "text-muted"}`}>Ativos ({assets.length})</button>
-        <button onClick={() => setTab("debts")} className={`px-3 py-1.5 rounded-md text-sm font-medium ${tab === "debts" ? "bg-[var(--accent)] text-[var(--on-accent)]" : "text-muted"}`}>Dívidas ({debts.length})</button>
+        <button onClick={() => setTab("assets")} className={`px-3 py-1.5 rounded-md text-sm font-medium ${tab === "assets" ? "bg-[var(--accent-fill)] text-[var(--on-accent)]" : "text-muted"}`}>Ativos ({assets.length})</button>
+        <button onClick={() => setTab("debts")} className={`px-3 py-1.5 rounded-md text-sm font-medium ${tab === "debts" ? "bg-[var(--accent-fill)] text-[var(--on-accent)]" : "text-muted"}`}>Dívidas ({debts.length})</button>
       </div>
 
       {tab === "assets" ? (

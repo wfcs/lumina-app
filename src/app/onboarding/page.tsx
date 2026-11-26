@@ -73,7 +73,7 @@ function SubmitButton({ disabled }: { disabled: boolean }) {
       type="submit"
       disabled={disabled || pending}
       className="w-full h-12 rounded-xl font-semibold text-white transition-opacity disabled:opacity-50"
-      style={{ background: "var(--accent)", color: "var(--on-accent)" }}
+      style={{ background: "var(--accent-fill)", color: "var(--on-accent)" }}
     >
       {pending ? "Validando…" : "Continuar"}
     </button>

@@ -19,7 +19,7 @@ export function ConnectChoice({ canOpenFinance }: { canOpenFinance: boolean }) {
         <div className="space-y-3">
           {canOpenFinance && (
             <Link href="/connect/openfinance" className="card p-5 flex items-center gap-4 hover:border-[var(--accent)]/50 transition-colors group">
-              <div className="h-12 w-12 rounded-2xl grid place-items-center shrink-0 shadow-glow-violet" style={{ background: "var(--accent)", color: "var(--on-accent)" }}>
+              <div className="h-12 w-12 rounded-2xl grid place-items-center shrink-0 shadow-glow-violet" style={{ background: "var(--accent-fill)", color: "var(--on-accent)" }}>
                 <Landmark size={22} />
               </div>
               <div className="flex-1 min-w-0">

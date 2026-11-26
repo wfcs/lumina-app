@@ -133,11 +133,11 @@ export function BillsReal({ accounts, transactions, cardSettings }: { accounts: 
                 <span className="font-semibold text-sm flex-1 truncate">{p.acc.name ?? "Cartão"}</span>
                 <CycleEditor accountId={p.acc.id} closing={p.s.closing_day} due={p.s.due_day} onSaved={() => router.refresh()} />
               </div>
-              <div className="relative h-9 rounded-lg bg-white/[0.03]">
-                <Link href="/transactions" className="absolute top-1 h-7 rounded-md bg-white/[0.07] grid place-items-center text-[11px] text-muted hover:bg-white/[0.12]" style={{ left: posOf(p.cyc.prevStart), width: widthOf(p.cyc.prevStart, p.cyc.prevEnd) }} title="Fatura passada">
+              <div className="relative h-9 rounded-lg bg-[var(--card-2)]">
+                <Link href="/transactions" className="absolute top-1 h-7 rounded-md bg-[var(--card-2)] grid place-items-center text-[11px] text-muted hover:bg-white/[0.12]" style={{ left: posOf(p.cyc.prevStart), width: widthOf(p.cyc.prevStart, p.cyc.prevEnd) }} title="Fatura passada">
                   <span className="num truncate px-1">{hideValues ? "••" : p.pastTotal.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</span>
                 </Link>
-                <Link href="/transactions" className="absolute top-1 h-7 rounded-md grid place-items-center text-[11px] text-white" style={{ left: posOf(p.cyc.start), width: widthOf(p.cyc.start, p.cyc.end), background: "var(--accent)", color: "var(--on-accent)", opacity: 0.9 }} title="Ciclo atual">
+                <Link href="/transactions" className="absolute top-1 h-7 rounded-md grid place-items-center text-[11px] text-white" style={{ left: posOf(p.cyc.start), width: widthOf(p.cyc.start, p.cyc.end), background: "var(--accent-fill)", color: "var(--on-accent)", opacity: 0.9 }} title="Ciclo atual">
                   <span className="num truncate px-1">{hideValues ? "••" : p.total.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</span>
                 </Link>
                 <div className="absolute top-0 h-full w-0.5 bg-[var(--mint)]" style={{ left: posOf(p.cyc.today) }} title="Hoje" />
@@ -169,7 +169,7 @@ export function BillsReal({ accounts, transactions, cardSettings }: { accounts: 
               <div className="text-[11px] text-muted">Fecha {ddmm(p.cyc.end)} · Venc: {ddmm(p.cyc.due)}</div>
               <p className="text-[11px] text-muted italic mt-1">Baseado nas transações do ciclo atual.</p>
               <div className="mt-2 flex items-center gap-2 text-xs text-muted num"><span>{ddmm(p.cyc.start)}</span>
-                <div className="flex-1 h-1.5 rounded-full bg-white/[0.06] overflow-hidden"><div className="h-full rounded-full" style={{ width: `${prog}%`, background: "var(--accent)" }} /></div>
+                <div className="flex-1 h-1.5 rounded-full bg-[var(--card-2)] overflow-hidden"><div className="h-full rounded-full" style={{ width: `${prog}%`, background: "var(--accent)" }} /></div>
                 <span>{ddmm(p.cyc.end)}</span></div>
               {p.prevParcelas + p.prevRecorrentes > 0 && <p className="text-[11px] text-muted italic mt-1">+<Money value={p.prevParcelas + p.prevRecorrentes} /> previsto</p>}
               <div className="mt-3 pt-2 border-t border-[var(--border)]">
@@ -223,7 +223,7 @@ function CycleEditor({ accountId, closing, due, onSaved }: { accountId: string; 
       <input type="number" min={1} max={31} value={c} onChange={(e) => setC(+e.target.value)} className="w-12 h-7 px-1 text-center rounded-lg border border-[var(--border)] bg-[var(--card-2)] text-xs num" />
       <label className="text-[11px] text-muted">Venc</label>
       <input type="number" min={1} max={31} value={d} onChange={(e) => setD(+e.target.value)} className="w-12 h-7 px-1 text-center rounded-lg border border-[var(--border)] bg-[var(--card-2)] text-xs num" />
-      <button onClick={save} disabled={busy} className="grid place-items-center h-7 w-7 rounded-lg text-white" style={{ background: "var(--accent)", color: "var(--on-accent)" }}>{busy ? <Loader2 size={12} className="animate-spin" /> : <Check size={13} />}</button>
+      <button onClick={save} disabled={busy} className="grid place-items-center h-7 w-7 rounded-lg text-white" style={{ background: "var(--accent-fill)", color: "var(--on-accent)" }}>{busy ? <Loader2 size={12} className="animate-spin" /> : <Check size={13} />}</button>
     </div>
   );
 }

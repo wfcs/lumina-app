@@ -99,3 +99,22 @@ export async function getInvestments(): Promise<DbInvestment[]> {
   const rows = (data ?? []).map((i: any) => ({ ...i, balance: Number(i.balance) }));
   return activeAccounts(rows, conns ?? []);
 }
+
+export interface DbSettlement { id: string; kind: "bill" | "installment" | "amortization"; target_key: string; transaction_id: string | null; source: "manual" | "rejected"; amount: number | null; created_at: string }
+export async function getSettlements(): Promise<DbSettlement[]> {
+  const supabase = createClient();
+  const { data } = await supabase.from("debt_settlements").select("id, kind, target_key, transaction_id, source, amount, created_at");
+  return (data ?? []).map((s: any) => ({ ...s, amount: s.amount == null ? null : Number(s.amount) }));
+}
+
+/** Saídas e entradas das contas (não cartão) dos últimos `days` dias: base para a baixa de dívidas. */
+export async function getBankTransactions(days = 120): Promise<{ id: string; date: string; amount: number; description: string | null }[]> {
+  const supabase = createClient();
+  const since = new Date(Date.now() - days * 86_400_000).toISOString().slice(0, 10);
+  const accounts = await getAccounts();
+  const ids = accounts.filter((a) => (a.type ?? "").toUpperCase() !== "CREDIT").map((a) => a.id);
+  if (ids.length === 0) return [];
+  const { data } = await supabase.from("transactions").select("id, date, amount, description")
+    .in("account_id", ids).gte("date", since).order("date", { ascending: false }).limit(1000);
+  return (data ?? []).map((t: any) => ({ ...t, amount: Number(t.amount) }));
+}

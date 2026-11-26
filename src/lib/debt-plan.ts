@@ -33,7 +33,10 @@ export function pricePmt(pv: number, i: number, n: number): number {
 
 const sum = (xs: number[]) => xs.reduce((s, x) => s + x, 0);
 
-export function buildDebtPlan(input: { loans: LoanIn[]; cards: CardIn[]; bills: BillIn[]; today: string }) {
+/** Chave de uma fatura (cartão + vencimento): a mesma usada nas baixas (src/lib/settle.ts). */
+const billKeyOf = (b: BillIn) => `${b.account_id}:${b.due_date}`;
+
+export function buildDebtPlan(input: { loans: LoanIn[]; cards: CardIn[]; bills: BillIn[]; today: string; settledBills?: Set<string> }) {
   const { today } = input;
 
   const all = input.loans.map((l): LoanOut => {
@@ -65,8 +68,12 @@ export function buildDebtPlan(input: { loans: LoanIn[]; cards: CardIn[]; bills: 
     return { ...c, utilization, alert: (utilization ?? 0) > CARD_ALERT, lastBill: latest.get(c.id) ?? null };
   });
   const inst = new Map(input.cards.map((c) => [c.id, c.institution]));
-  const pending = Array.from(latest.values()).filter((b) => b.status !== "paid" && b.total_amount > 0)
-    .map((b) => ({ ...b, institution: inst.get(b.account_id) ?? "Cartão" }));
+  // Fatura com baixa (transação que a pagou) sai da lista do que pagar.
+  const settled = input.settledBills ?? new Set<string>();
+  const withInst = (b: BillIn) => ({ ...b, institution: inst.get(b.account_id) ?? "Cartão" });
+  const open = Array.from(latest.values()).filter((b) => b.status !== "paid" && b.total_amount > 0);
+  const pending = open.filter((b) => !settled.has(billKeyOf(b))).map(withInst);
+  const settledBills = open.filter((b) => settled.has(billKeyOf(b))).map(withInst);
   const toConfirm = pending.filter((b) => (b.status === "closed" || b.status === "overdue") && b.due_date && b.due_date <= today);
   const toPay = pending.filter((b) => !toConfirm.includes(b));
 
@@ -96,7 +103,7 @@ export function buildDebtPlan(input: { loans: LoanIn[]; cards: CardIn[]; bills: 
       monthlyInstallments: sum(activeLoans.map((l) => l.installment)),
       lastDueDate: dues.sort().at(-1) ?? null,
     },
-    ranking, activeLoans, paidOffLoans, cards,
+    ranking, activeLoans, paidOffLoans, cards, settledBills,
   };
 }
 export type DebtPlan = ReturnType<typeof buildDebtPlan>;

@@ -35,7 +35,7 @@ export function FeedbackWidget() {
         title="Enviar feedback"
         aria-label="Enviar feedback"
         className="fixed bottom-5 right-5 z-30 h-12 w-12 sm:w-auto justify-center sm:px-4 rounded-full flex items-center gap-2 text-white font-semibold text-sm shadow-glow-violet"
-        style={{ background: "var(--accent)", color: "var(--on-accent)" }}
+        style={{ background: "var(--accent-fill)", color: "var(--on-accent)" }}
       >
         <MessageSquarePlus size={18} /> <span className="hidden sm:inline">Feedback</span>
       </button>
@@ -119,7 +119,7 @@ function SubmitButton() {
       type="submit"
       disabled={pending}
       className="w-full h-11 rounded-xl font-semibold text-white transition-opacity disabled:opacity-50"
-      style={{ background: "var(--accent)", color: "var(--on-accent)" }}
+      style={{ background: "var(--accent-fill)", color: "var(--on-accent)" }}
     >
       {pending ? "Enviando…" : "Enviar feedback"}
     </button>

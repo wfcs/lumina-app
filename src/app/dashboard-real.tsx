@@ -11,11 +11,12 @@ import { ShinyText } from "@/components/fx/shiny-text";
 import { AnimatedList } from "@/components/fx/animated-list";
 import { brl } from "@/lib/format";
 import { makeResolver } from "@/lib/cat-resolve";
-import { ArrowRight, ArrowUpRight, Command, Sparkles, Wallet } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Sparkles, Wallet, ChevronLeft, ChevronRight } from "lucide-react";
+import { useState } from "react";
+import { monthSummary, monthsAvailable, isCardPayment } from "@/lib/month-summary";
 
 const PALETTE = ["#00D2FF", "#FFD2B3", "#4FCE9A", "#8C84D8", "#7FE6FF", "#F4B860", "#F0839F", "#E8A383", "#5B8DEF", "#C9C4F2"];
 const pad = (n: number) => String(n).padStart(2, "0");
-const clamp01 = (n: number) => Math.max(0, Math.min(1, n));
 
 export function DashboardReal({ accounts, transactions, connections, categories, investments, loans }: { accounts: DbAccount[]; transactions: DbTransaction[]; connections: DbConnection[]; categories: UserCategory[]; investments: DbInvestment[]; loans: DbDebt[] }) {
   const resolver = makeResolver(categories);
@@ -29,28 +30,19 @@ export function DashboardReal({ accounts, transactions, connections, categories,
   const patrimonio = nw.net;
 
   const now = new Date();
-  const todayStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
-  const month = todayStr.slice(0, 7);
-  const monthLabel = now.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+  const todayStr = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(now);
   const activeConns = connections.filter((c) => c.status !== "disconnected").length;
-  const monthTx = transactions.filter((t) => t.date.startsWith(month) && t.date <= todayStr);
 
-  const income = monthTx.filter((t) => t.amount > 0).reduce((s, t) => s + t.amount, 0);
-  const expense = monthTx.filter((t) => t.amount < 0).reduce((s, t) => s + Math.abs(t.amount), 0);
-  const delta = income - expense;
-  const ratio = income > 0 ? (expense / income) * 100 : null;
-  const savingsRate = income > 0 ? delta / income : 0;
-
-  // Score de saúde (0–100) a partir da taxa de poupança do mês
-  const hasIncome = income > 0;
-  const score = hasIncome ? Math.round(clamp01(savingsRate) * 100) : null;
-  const health = score === null
-    ? { tone: "var(--muted)", label: "Sem dados", note: "Sem receita registrada no mês." }
-    : score >= 70
-    ? { tone: "var(--mint)", label: "Boa", note: "Você está guardando bem neste mês." }
-    : score >= 45
-    ? { tone: "var(--warn)", label: "Atenção", note: "Dá pra apertar os gastos variáveis." }
-    : { tone: "var(--danger)", label: "Alerta", note: "Gastos altos frente à renda do mês." };
+  // Só transações de contas ativas; mês escolhido no seletor (padrão: mês atual).
+  const typeByAccount = new Map(accounts.map((a) => [a.id, a.type]));
+  const activeTx = transactions.filter((t) => typeByAccount.has(t.account_id) && t.date <= todayStr);
+  const months = monthsAvailable(activeTx, todayStr.slice(0, 7));
+  const [month, setMonth] = useState(months[0] ?? todayStr.slice(0, 7));
+  const idx = months.indexOf(month);
+  const monthLabel = new Date(`${month}-15T12:00:00`).toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+  const sum = monthSummary(activeTx, typeByAccount, month);
+  const income = sum.income, expense = sum.expense;
+  const monthTx = activeTx.filter((t) => t.date.startsWith(month) && !isCardPayment(t, typeByAccount.get(t.account_id)));
 
   // Distribuição por categoria — top 4
   const catMap = new Map<string, number>();
@@ -83,7 +75,7 @@ export function DashboardReal({ accounts, transactions, connections, categories,
     const d = new Date(now.getFullYear(), now.getMonth() - (5 - i), 1);
     const key = `${d.getFullYear()}-${pad(d.getMonth() + 1)}`;
     const label = d.toLocaleDateString("pt-BR", { month: "short" }).replace(".", "");
-    const mtx = transactions.filter((t) => t.date.startsWith(key));
+    const mtx = activeTx.filter((t) => t.date.startsWith(key) && !isCardPayment(t, typeByAccount.get(t.account_id)));
     return {
       label,
       in: mtx.filter((t) => t.amount > 0).reduce((s, t) => s + t.amount, 0),
@@ -114,43 +106,48 @@ export function DashboardReal({ accounts, transactions, connections, categories,
 
   return (
     <div className="space-y-5">
-      {/* Topbar */}
+      {/* Topo + seletor de mês */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="font-display text-3xl font-bold tracking-tight">Olá, Felipe 👋</h1>
-          <p className="text-muted text-sm mt-1">Sua clareza financeira · {monthLabel} · {activeConns} {activeConns === 1 ? "conexão ativa" : "conexões ativas"}</p>
+          <p className="text-muted text-sm mt-1">Sua clareza financeira · {activeConns} {activeConns === 1 ? "conexão ativa" : "conexões ativas"}</p>
         </div>
-        <div className="hidden sm:flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm text-muted">
-          <Command size={14} /> Buscar ou executar…
-          <kbd className="ml-1 rounded-md border border-[var(--border)] bg-[var(--card-2)] px-1.5 text-[11px]">⌘K</kbd>
+        <div className="flex items-center gap-1 rounded-full border border-[var(--border)] bg-[var(--card)] p-1" role="group" aria-label="Mês">
+          <button className="grid place-items-center h-10 w-10 rounded-full text-muted hover:bg-[var(--card-2)] disabled:opacity-30" aria-label="Mês anterior"
+            disabled={idx < 0 || idx >= months.length - 1} onClick={() => setMonth(months[idx + 1])}><ChevronLeft size={18} /></button>
+          <select value={month} onChange={(e) => setMonth(e.target.value)} aria-label="Escolher mês"
+            className="bg-transparent text-sm font-semibold outline-none cursor-pointer px-1 h-10">
+            {months.map((m) => <option key={m} value={m}>{new Date(`${m}-15T12:00:00`).toLocaleDateString("pt-BR", { month: "long", year: "numeric" })}</option>)}
+          </select>
+          <button className="grid place-items-center h-10 w-10 rounded-full text-muted hover:bg-[var(--card-2)] disabled:opacity-30" aria-label="Próximo mês"
+            disabled={idx <= 0} onClick={() => setMonth(months[idx - 1])}><ChevronRight size={18} /></button>
         </div>
       </div>
 
-      {/* HERO — Saúde financeira */}
-      <div className="card p-5 animate-fade-up relative overflow-hidden">
-        <div className="orb h-72 w-72 -top-24 -right-16" style={{ background: "radial-gradient(circle, #00D2FF, transparent 70%)" }} />
-        <div className="relative grid lg:grid-cols-[1.3fr_1fr] gap-6 items-center">
-          <div>
-            <Badge tone={delta >= 0 ? "positive" : "danger"}>{delta >= 0 ? "No azul este mês" : "No vermelho este mês"}</Badge>
-            <p className="text-[11px] uppercase tracking-[0.14em] text-muted mt-4 mb-1.5">Patrimônio líquido</p>
-            <Money value={patrimonio} gradient glow countUp className="text-5xl font-bold leading-none" />
-            <p className="text-sm text-muted mt-3 max-w-md">
-              {hasIncome
-                ? <>Você guardou <span className="text-[var(--mint)] font-semibold num">{Math.round(savingsRate * 100)}%</span> da renda do mês. {ratio !== null && <>Sua razão gasto/receita é <span className="num font-semibold text-[var(--text)]">{ratio.toFixed(0)}%</span>.</>}</>
-                : "Ainda sem receita registrada neste mês para calcular a taxa de poupança."}
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 mt-5 max-w-md">
-              <Chip label="Entradas" value={income} tone="mint" />
-              <Chip label="Saídas" value={-expense} tone="danger" />
-              <Chip label="Poupado" plain={hasIncome ? `${Math.round(savingsRate * 100)}%` : "—"} />
-            </div>
+      {/* Mês escolhido: entradas, saídas e saldo */}
+      <div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="card p-5 animate-fade-up">
+            <p className="text-xs text-muted">Entradas</p>
+            <Money value={sum.income} countUp className="text-3xl font-bold text-[var(--mint)] block mt-1" />
+            <p className="text-xs text-muted mt-1">o que entrou nas contas em {monthLabel}</p>
           </div>
-          <div className="flex flex-col items-center gap-2">
-            <HealthRing score={score} tone={health.tone} />
-            <p className="text-sm text-muted text-center max-w-[200px]">
-              <span className="font-semibold" style={{ color: health.tone }}>{health.label}.</span> {health.note}
-            </p>
+          <div className="card p-5 animate-fade-up">
+            <p className="text-xs text-muted">Saídas</p>
+            <Money value={-sum.expense} countUp className="text-3xl font-bold text-danger block mt-1" />
+            <p className="text-xs text-muted mt-1">gastos, Pix enviados e parcelas</p>
           </div>
+          <div className="card card-peach p-5 animate-fade-up">
+            <p className="text-xs text-muted">Saldo do mês</p>
+            <Money value={sum.net} countUp className="text-3xl font-bold block mt-1" />
+            <p className="text-xs text-muted mt-1">entradas − saídas · {sum.net >= 0 ? "sobrou dinheiro" : "gastou mais do que entrou"}</p>
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center justify-between gap-2 mt-2">
+          <p className="text-xs text-muted">
+            {sum.count} lançamentos{sum.internal > 0 && <> · pagamentos de fatura entre suas contas ({brl(sum.internal)}) não contam como entrada nem saída</>}.
+          </p>
+          <Link href="/transactions" className="text-[var(--accent)] text-xs font-semibold inline-flex items-center gap-1 min-h-[44px]">Ver transações <ArrowRight size={12} /></Link>
         </div>
       </div>
 
@@ -322,39 +319,7 @@ export function DashboardReal({ accounts, transactions, connections, categories,
   );
 }
 
-function HealthRing({ score, tone }: { score: number | null; tone: string }) {
-  const R = 78, C = 2 * Math.PI * R;
-  const val = score ?? 0;
-  const offset = C - (C * val) / 100;
-  return (
-    <div className="relative h-[168px] w-[168px]">
-      <svg width="168" height="168" viewBox="0 0 180 180" className="-rotate-90">
-        <circle cx="90" cy="90" r={R} fill="none" stroke="var(--card-2)" strokeWidth="14" />
-        <motion.circle cx="90" cy="90" r={R} fill="none" stroke={tone} strokeWidth="14" strokeLinecap="round"
-          strokeDasharray={C} initial={{ strokeDashoffset: C }} animate={{ strokeDashoffset: offset }}
-          transition={{ duration: 1.3, ease: [0.2, 0.8, 0.2, 1] }} />
-      </svg>
-      <div className="absolute inset-0 grid place-items-center">
-        <div className="text-center">
-          <div className="num text-4xl font-bold leading-none">{score ?? "—"}</div>
-          <div className="text-[11px] text-muted mt-1">saúde</div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
-function Chip({ label, value, tone, plain }: { label: string; value?: number; tone?: "mint" | "danger"; plain?: string }) {
-  const color = tone === "mint" ? "text-[var(--mint)]" : tone === "danger" ? "text-danger" : "";
-  return (
-    <div className="rounded-xl bg-[var(--card-2)] px-3 py-2.5 flex sm:block items-center justify-between gap-3">
-      <div className="text-xs text-muted">{label}</div>
-      {plain !== undefined
-        ? <div className="text-lg font-bold num mt-0.5">{plain}</div>
-        : <Money value={value ?? 0} className={`text-lg font-bold mt-0.5 ${color}`} />}
-    </div>
-  );
-}
 
 function InstDot({ conn, size = 20 }: { conn?: DbConnection; size?: number }) {
   const name = conn?.institution_name ?? "";
@@ -363,7 +328,7 @@ function InstDot({ conn, size = 20 }: { conn?: DbConnection; size?: number }) {
     return <img src={conn.institution_image} alt={name} className="rounded-lg shrink-0 object-cover" style={{ width: size, height: size }} />;
   }
   return (
-    <div className="rounded-lg grid place-items-center text-[var(--on-accent)] shrink-0 font-bold bg-[var(--accent)]"
+    <div className="rounded-lg grid place-items-center text-[var(--on-accent)] shrink-0 font-bold bg-[var(--accent-fill)]"
       style={{ width: size, height: size, fontSize: size * 0.45 }} title={name || "Conta"}>
       {(name || "•").charAt(0).toUpperCase()}
     </div>

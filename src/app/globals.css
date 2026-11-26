@@ -16,6 +16,7 @@
   --text: #F5F3FF;       /* 15,2:1 sobre o cartão */
   --muted: #A9A5CF;      /* 7,1:1 sobre o cartão */
   --accent: #00D2FF;     /* Ciano Elétrico (9,2:1 sobre o cartão) */
+  --accent-fill: #00D2FF;
   --on-accent: #1C1747;  /* texto sobre ciano */
   --indigo: #FFD2B3;
   --violet: #FFD2B3;     /* par do gradiente ciano → pêssego */
@@ -27,24 +28,26 @@
   --warn: #FFB37A;
 }
 .light {
-  --bg: #FFF4EC;         /* pêssego bem claro */
+  /* Branco aconchegante: papel quente + índigo no texto, pêssego no destaque, ciano na ação. */
+  --bg: #FAF6F1;
   --bg-elev: #FFFFFF;
   --card: #FFFFFF;
-  --card-2: #FFEADB;
-  --border: #F1DCCB;
-  --border-soft: #F7E8DC;
-  --text: #1C1747;
-  --muted: #5E5884;
-  --accent: #007C99;     /* ciano escurecido: #00D2FF sobre branco dá 1,8:1 */
-  --on-accent: #FFFFFF;
+  --card-2: #F6EEE6;
+  --border: #EADFD3;
+  --border-soft: #F2E9DF;
+  --text: #1C1747;       /* índigo */
+  --muted: #5E5884;      /* 6,1:1 sobre o fundo */
+  --accent: #00738E;     /* ciano escurecido p/ texto e linhas (≥4,5:1 sobre o fundo) */
+  --accent-fill: #00D2FF;/* botão em ciano elétrico com texto índigo (9,2:1) */
+  --on-accent: #1C1747;
   --indigo: #1C1747;
-  --violet: #C97A4A;
-  --mint: #2F9E6F;
+  --violet: #E8A383;
+  --mint: #1E7F57;
   --peach: #FFD2B3;
   --on-peach: #1C1747;
   --on-peach-muted: #5A4660;
-  --danger: #D94F74;
-  --warn: #B86A2E;
+  --danger: #B5385A;
+  --warn: #A15A22;
 }
 
 * { border-color: var(--border); }
@@ -65,7 +68,14 @@ body::before {
   border-radius: 1.25rem;
   box-shadow: 0 1px 0 0 rgba(255,255,255,0.03) inset, 0 16px 40px -24px rgba(0,0,0,0.7);
 }
-.light .card { box-shadow: 0 1px 2px rgba(28,23,71,0.05), 0 8px 24px -16px rgba(28,23,71,0.18); }
+.light .card { background: var(--card); box-shadow: 0 1px 2px rgba(28,23,71,0.04), 0 10px 28px -18px rgba(120,80,40,0.22); }
+.light body::before { opacity: 0.025; }
+
+/* Menu lateral sempre em Índigo Noturno (60% da paleta), nos dois temas. */
+.sidebar-indigo {
+  --bg-elev: #1C1747; --text: #F5F3FF; --muted: #C9C4F2; --border: #312A66;
+  --accent: #00D2FF; --card-2: #262056; color: var(--text);
+}
 
 /* Cartão de destaque em pêssego (30% da paleta): 1 por tela, para o número-veredito. */
 .card.card-peach { background: var(--peach); border-color: transparent; color: var(--on-peach); }

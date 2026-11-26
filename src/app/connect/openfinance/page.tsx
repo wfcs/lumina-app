@@ -68,7 +68,7 @@ export default function OpenFinancePage() {
             <div className="space-y-2.5">
               {url ? (
                 <a href={url} target="_blank" rel="noopener noreferrer" onClick={() => setOpened(true)}
-                   className="w-full h-12 rounded-xl font-semibold text-white flex items-center justify-center gap-2" style={{ background: "var(--accent)", color: "var(--on-accent)" }}>
+                   className="w-full h-12 rounded-xl font-semibold text-white flex items-center justify-center gap-2" style={{ background: "var(--accent-fill)", color: "var(--on-accent)" }}>
                   Conectar banco <ExternalLink size={16} />
                 </a>
               ) : (

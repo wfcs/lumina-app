@@ -6,7 +6,7 @@ import { useState } from "react";
 export function Providers({ children }: { children: React.ReactNode }) {
   const [qc] = useState(() => new QueryClient());
   return (
-    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} storageKey="lumina-theme">
       <QueryClientProvider client={qc}>{children}</QueryClientProvider>
     </ThemeProvider>
   );

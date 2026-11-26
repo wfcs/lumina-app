@@ -13,7 +13,7 @@ export function Stepper({ steps, current }: { steps: string[]; current: number }
         return (
           <li key={s} className="flex items-center gap-2 flex-1 last:flex-none" aria-current={now ? "step" : undefined}>
             <span className="grid place-items-center h-7 w-7 shrink-0 rounded-full text-xs font-semibold border transition-colors"
-              style={done ? { background: "var(--accent)", color: "var(--on-accent)", borderColor: "var(--accent)" }
+              style={done ? { background: "var(--accent-fill)", color: "var(--on-accent)", borderColor: "var(--accent)" }
                 : now ? { borderColor: "var(--accent)", color: "var(--accent)" } : { borderColor: "var(--border)", color: "var(--muted)" }}>
               {done ? <Check size={14} /> : i + 1}
             </span>

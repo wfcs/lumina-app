@@ -32,7 +32,7 @@ export function Sidebar() {
       <aside
         className={cn(
           "fixed inset-y-0 left-0 z-40 w-[252px] flex flex-col transition-transform duration-300",
-          "bg-[var(--bg-elev)] border-r border-[var(--border)]",
+          "sidebar-indigo bg-[var(--bg-elev)] border-r border-[var(--border)]",
           mobileNavOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         )}
       >
@@ -55,7 +55,7 @@ export function Sidebar() {
                 onClick={() => setMobileNav(false)}
                 className={cn(
                   "group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all",
-                  active ? "text-[var(--text)]" : "text-muted hover:text-[var(--text)] hover:bg-white/[0.03]"
+                  active ? "text-[var(--text)]" : "text-muted hover:text-[var(--text)] hover:bg-[var(--card-2)]"
                 )}
               >
                 {active && (
@@ -71,16 +71,16 @@ export function Sidebar() {
         </nav>
 
         <div className="p-3 space-y-1">
-          <Link href="/profile" className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/[0.03] transition-colors">
+          <Link href="/profile" className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[var(--card-2)] transition-colors">
             <div className="h-9 w-9 rounded-full grid place-items-center text-white font-semibold text-sm"
-                 style={{ background: "var(--accent)", color: "var(--on-accent)" }}>F</div>
+                 style={{ background: "var(--accent-fill)", color: "var(--on-accent)" }}>F</div>
             <div className="text-sm leading-tight">
               <div className="font-semibold">Felipe</div>
               <div className="text-muted text-xs">Plano Premium</div>
             </div>
           </Link>
           <form action="/auth/signout" method="post">
-            <button type="submit" className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium text-muted hover:text-danger hover:bg-white/[0.03] transition-colors">
+            <button type="submit" className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium text-muted hover:text-danger hover:bg-[var(--card-2)] transition-colors">
               <LogOut size={18} /> Sair
             </button>
           </form>

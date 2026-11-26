@@ -84,8 +84,8 @@ export function RecurringReal({ transactions, categories }: { transactions: DbTr
       </div>
 
       <div className="inline-flex rounded-lg border border-[var(--border)] p-0.5 mb-4">
-        <button onClick={() => setTab("expense")} className={`px-3 py-1.5 rounded-md text-sm font-medium ${tab === "expense" ? "bg-[var(--accent)] text-[var(--on-accent)]" : "text-muted"}`}>Despesas ({expense.length})</button>
-        <button onClick={() => setTab("income")} className={`px-3 py-1.5 rounded-md text-sm font-medium ${tab === "income" ? "bg-[var(--accent)] text-[var(--on-accent)]" : "text-muted"}`}>Receitas ({income.length})</button>
+        <button onClick={() => setTab("expense")} className={`px-3 py-1.5 rounded-md text-sm font-medium ${tab === "expense" ? "bg-[var(--accent-fill)] text-[var(--on-accent)]" : "text-muted"}`}>Despesas ({expense.length})</button>
+        <button onClick={() => setTab("income")} className={`px-3 py-1.5 rounded-md text-sm font-medium ${tab === "income" ? "bg-[var(--accent-fill)] text-[var(--on-accent)]" : "text-muted"}`}>Receitas ({income.length})</button>
       </div>
 
       <Card className="p-0 overflow-hidden">
@@ -101,9 +101,9 @@ export function RecurringReal({ transactions, categories }: { transactions: DbTr
             </thead>
             <tbody>
               {list.map((g) => (
-                <tr key={g.key} className="border-b border-[var(--border)] last:border-0 hover:bg-white/[0.02]">
+                <tr key={g.key} className="border-b border-[var(--border)] last:border-0 hover:bg-[var(--card-2)]">
                   <td className="p-3 font-medium">{g.name}</td>
-                  <td className="p-3 hidden sm:table-cell"><span className="inline-flex px-2 py-0.5 rounded-full text-xs bg-white/[0.05] text-muted">{g.category}</span></td>
+                  <td className="p-3 hidden sm:table-cell"><span className="inline-flex px-2 py-0.5 rounded-full text-xs bg-[var(--card-2)] text-muted">{g.category}</span></td>
                   <td className="p-3"><Badge tone="brand">{g.months} meses · {g.count}x</Badge></td>
                   <td className="p-3 text-right"><Money value={tab === "expense" ? -g.avg : g.avg} colorize className="font-semibold" /></td>
                 </tr>

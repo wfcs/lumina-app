@@ -24,7 +24,7 @@ export function ProjectionMock() {
       <ExampleBanner />
       <PageHeader title="Projeção" subtitle="Para onde seu saldo está indo nos próximos meses" action={
         <div className="inline-flex rounded-lg border border-[var(--border)] p-0.5">
-          {horizons.map((x) => <button key={x} onClick={() => setH(x)} className={`px-3 py-1.5 rounded-md text-sm font-medium ${x === h ? "bg-[var(--accent)] text-[var(--on-accent)]" : "text-muted"}`}>{x}</button>)}
+          {horizons.map((x) => <button key={x} onClick={() => setH(x)} className={`px-3 py-1.5 rounded-md text-sm font-medium ${x === h ? "bg-[var(--accent-fill)] text-[var(--on-accent)]" : "text-muted"}`}>{x}</button>)}
         </div>
       } />
 
