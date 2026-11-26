@@ -38,7 +38,7 @@ const inRange = (t: DbTransaction, a: Date, b: Date) => t.date >= iso(a) && t.da
 
 export function BillsReal({ accounts, transactions, cardSettings }: { accounts: DbAccount[]; transactions: DbTransaction[]; cardSettings: CardSetting[] }) {
   const router = useRouter();
-  const { hideValues, toggleHideValues } = useUI();
+  const { hideValues } = useUI();
   const cards = accounts.filter((a) => (a.type ?? "").toUpperCase() === "CREDIT");
   const setMap = new Map(cardSettings.map((c) => [c.account_id, c]));
 
@@ -145,14 +145,14 @@ export function BillsReal({ accounts, transactions, cardSettings }: { accounts: 
             </div>
           ))}
         </div>
-        <div className="flex justify-between text-[10px] text-muted mt-2 num">
+        <div className="flex justify-between text-xs text-muted mt-2 num">
           <span>{ddmm(gmin)}</span><span>{ddmm(gmax)}</span>
         </div>
       </Card>
 
       {/* SEÇÃO 3 — Próximas faturas */}
       <h2 className="font-display font-bold text-lg mb-3">Próximas Faturas</h2>
-      <div className="grid sm:grid-cols-2 gap-4 mb-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
         {per.map((p) => {
           const days = Math.round((p.cyc.due.getTime() - p.cyc.today.getTime()) / 86400000);
           const prog = Math.min(100, Math.max(0, ((p.cyc.today.getTime() - p.cyc.start.getTime()) / Math.max(1, p.cyc.end.getTime() - p.cyc.start.getTime())) * 100));
@@ -168,19 +168,19 @@ export function BillsReal({ accounts, transactions, cardSettings }: { accounts: 
               <div className={`text-xs mt-1 ${days <= 3 ? "text-warn" : "text-muted"}`}>Vence em {days} dias</div>
               <div className="text-[11px] text-muted">Fecha {ddmm(p.cyc.end)} · Venc: {ddmm(p.cyc.due)}</div>
               <p className="text-[11px] text-muted italic mt-1">Baseado nas transações do ciclo atual.</p>
-              <div className="mt-2 flex items-center gap-2 text-[10px] text-muted num"><span>{ddmm(p.cyc.start)}</span>
+              <div className="mt-2 flex items-center gap-2 text-xs text-muted num"><span>{ddmm(p.cyc.start)}</span>
                 <div className="flex-1 h-1.5 rounded-full bg-white/[0.06] overflow-hidden"><div className="h-full rounded-full" style={{ width: `${prog}%`, background: "var(--accent)" }} /></div>
                 <span>{ddmm(p.cyc.end)}</span></div>
               {p.prevParcelas + p.prevRecorrentes > 0 && <p className="text-[11px] text-muted italic mt-1">+<Money value={p.prevParcelas + p.prevRecorrentes} /> previsto</p>}
               <div className="mt-3 pt-2 border-t border-[var(--border)]">
-                <p className="text-[10px] uppercase tracking-wide text-muted mb-1">Por cartão</p>
+                <p className="text-[11px] uppercase tracking-wide text-muted mb-1">Por cartão</p>
                 <div className="flex items-center gap-2 text-sm">
                   <CreditCard size={13} className="text-muted" />
                   <span className="flex-1">Final {p.acc.number?.slice(-4) ?? "----"} <span className="text-muted text-xs">· {p.count} transações</span></span>
                   <Money value={p.total} className="font-medium" />
                 </div>
               </div>
-              <Link href="/transactions" className="text-[var(--accent)] text-xs font-semibold flex items-center gap-1 mt-3">Ver transações <ArrowRight size={12} /></Link>
+              <Link href="/transactions" className="text-[var(--accent)] text-xs font-semibold inline-flex items-center gap-1 mt-1 min-h-[44px]">Ver transações <ArrowRight size={12} /></Link>
             </Card>
           );
         })}
@@ -192,12 +192,6 @@ export function BillsReal({ accounts, transactions, cardSettings }: { accounts: 
         Faturas pagas confirmadas pelo banco ainda não são sincronizadas. Chega quando ligarmos o produto de faturas do Open Finance.
       </Card>
 
-      {/* FAB — ocultar/mostrar valores */}
-      <button onClick={toggleHideValues} title={hideValues ? "Mostrar valores" : "Ocultar valores"}
-        className="fixed bottom-20 right-5 z-30 h-12 w-12 rounded-full grid place-items-center text-white shadow-glow-violet"
-        style={{ background: "var(--accent)", color: "var(--on-accent)" }}>
-        <Eye size={20} />
-      </button>
     </div>
   );
 }
@@ -222,7 +216,7 @@ function CycleEditor({ accountId, closing, due, onSaved }: { accountId: string; 
     setBusy(false);
     if (!res.error) { setOpen(false); onSaved(); }
   }
-  if (!open) return <button onClick={() => setOpen(true)} className="text-xs text-muted hover:text-[var(--accent)] inline-flex items-center gap-1"><Settings2 size={13} /> Fecha {closing} · Venc {due}</button>;
+  if (!open) return <button onClick={() => setOpen(true)} className="text-xs text-muted hover:text-[var(--accent)] inline-flex items-center gap-1 min-h-[44px] px-2 -mx-2"><Settings2 size={13} /> Fecha dia {closing} · vence dia {due}</button>;
   return (
     <div className="flex items-center gap-1.5">
       <label className="text-[11px] text-muted">Fecha</label>

@@ -88,3 +88,14 @@ export async function getCardBills(): Promise<DbCardBill[]> {
   const { data } = await supabase.from("card_bills").select("account_id, due_date, total_amount, status");
   return (data ?? []).map((b: any) => ({ ...b, total_amount: Number(b.total_amount) }));
 }
+
+export interface DbInvestment { id: string; connection_id: string | null; name: string; type: string | null; balance: number }
+export async function getInvestments(): Promise<DbInvestment[]> {
+  const supabase = createClient();
+  const [{ data }, { data: conns }] = await Promise.all([
+    supabase.from("investments").select("id, connection_id, name, type, balance"),
+    supabase.from("connections").select("id, status"),
+  ]);
+  const rows = (data ?? []).map((i: any) => ({ ...i, balance: Number(i.balance) }));
+  return activeAccounts(rows, conns ?? []);
+}

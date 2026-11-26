@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { autocategorize } from "@/server/autocategorize";
-import { getAccounts, getTransactions, getConnections, getUserCategories } from "@/lib/data";
+import { getAccounts, getTransactions, getConnections, getUserCategories, getInvestments, getDebts } from "@/lib/data";
 import { DashboardReal } from "./dashboard-real";
 import { DashboardMock } from "./dashboard-mock";
 
@@ -10,8 +10,8 @@ export default async function DashboardPage() {
   const supabase = createClient();
   await supabase.rpc("ensure_default_categories");
   await autocategorize();
-  const [transactions, connections, categories] = await Promise.all([
-    getTransactions(500), getConnections(), getUserCategories(),
+  const [transactions, connections, categories, investments, loans] = await Promise.all([
+    getTransactions(500), getConnections(), getUserCategories(), getInvestments(), getDebts(),
   ]);
-  return <DashboardReal accounts={accounts} transactions={transactions} connections={connections} categories={categories} />;
+  return <DashboardReal accounts={accounts} transactions={transactions} connections={connections} categories={categories} investments={investments} loans={loans} />;
 }

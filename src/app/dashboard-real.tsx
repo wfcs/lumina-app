@@ -5,7 +5,10 @@ import { AreaChart, Area, ResponsiveContainer } from "recharts";
 import { Money } from "@/components/ui/money";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import type { DbAccount, DbTransaction, DbConnection, UserCategory } from "@/lib/data";
+import type { DbAccount, DbTransaction, DbConnection, UserCategory, DbInvestment, DbDebt } from "@/lib/data";
+import { netWorth } from "@/lib/net-worth";
+import { ShinyText } from "@/components/fx/shiny-text";
+import { AnimatedList } from "@/components/fx/animated-list";
 import { brl } from "@/lib/format";
 import { makeResolver } from "@/lib/cat-resolve";
 import { ArrowRight, ArrowUpRight, Command, Sparkles, Wallet } from "lucide-react";
@@ -14,20 +17,22 @@ const PALETTE = ["#00D2FF", "#FFD2B3", "#4FCE9A", "#8C84D8", "#7FE6FF", "#F4B860
 const pad = (n: number) => String(n).padStart(2, "0");
 const clamp01 = (n: number) => Math.max(0, Math.min(1, n));
 
-export function DashboardReal({ accounts, transactions, connections, categories }: { accounts: DbAccount[]; transactions: DbTransaction[]; connections: DbConnection[]; categories: UserCategory[] }) {
+export function DashboardReal({ accounts, transactions, connections, categories, investments, loans }: { accounts: DbAccount[]; transactions: DbTransaction[]; connections: DbConnection[]; categories: UserCategory[]; investments: DbInvestment[]; loans: DbDebt[] }) {
   const resolver = makeResolver(categories);
   const emojiById = new Map(categories.map((c) => [c.id, c.emoji]));
   const connById = new Map(connections.map((c) => [c.id, c]));
   const isCredit = (a: DbAccount) => (a.type ?? "").toUpperCase() === "CREDIT";
 
-  const ativos = accounts.filter((a) => !isCredit(a)).reduce((s, a) => s + a.balance, 0);
-  const dividas = accounts.filter(isCredit).reduce((s, a) => s + Math.abs(a.balance), 0);
-  const patrimonio = ativos - dividas;
+  // Patrimônio = contas + investimentos − (cartões + empréstimos). Ver src/lib/net-worth.ts.
+  const nw = netWorth({ accounts, investments, loans });
+  const ativos = nw.cash; // reserva líquida (só contas)
+  const patrimonio = nw.net;
 
   const now = new Date();
   const todayStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
   const month = todayStr.slice(0, 7);
   const monthLabel = now.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+  const activeConns = connections.filter((c) => c.status !== "disconnected").length;
   const monthTx = transactions.filter((t) => t.date.startsWith(month) && t.date <= todayStr);
 
   const income = monthTx.filter((t) => t.amount > 0).reduce((s, t) => s + t.amount, 0);
@@ -113,7 +118,7 @@ export function DashboardReal({ accounts, transactions, connections, categories 
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="font-display text-3xl font-bold tracking-tight">Olá, Felipe 👋</h1>
-          <p className="text-muted text-sm mt-1 capitalize">Sua clareza financeira · {monthLabel} · {connections.length} {connections.length === 1 ? "conexão" : "conexões"}</p>
+          <p className="text-muted text-sm mt-1">Sua clareza financeira · {monthLabel} · {activeConns} {activeConns === 1 ? "conexão ativa" : "conexões ativas"}</p>
         </div>
         <div className="hidden sm:flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm text-muted">
           <Command size={14} /> Buscar ou executar…
@@ -128,13 +133,13 @@ export function DashboardReal({ accounts, transactions, connections, categories 
           <div>
             <Badge tone={delta >= 0 ? "positive" : "danger"}>{delta >= 0 ? "No azul este mês" : "No vermelho este mês"}</Badge>
             <p className="text-[11px] uppercase tracking-[0.14em] text-muted mt-4 mb-1.5">Patrimônio líquido</p>
-            <Money value={patrimonio} gradient glow className="text-5xl font-bold leading-none" />
+            <Money value={patrimonio} gradient glow countUp className="text-5xl font-bold leading-none" />
             <p className="text-sm text-muted mt-3 max-w-md">
               {hasIncome
                 ? <>Você guardou <span className="text-[var(--mint)] font-semibold num">{Math.round(savingsRate * 100)}%</span> da renda do mês. {ratio !== null && <>Sua razão gasto/receita é <span className="num font-semibold text-[var(--text)]">{ratio.toFixed(0)}%</span>.</>}</>
                 : "Ainda sem receita registrada neste mês para calcular a taxa de poupança."}
             </p>
-            <div className="grid grid-cols-3 gap-3 mt-5 max-w-md">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 mt-5 max-w-md">
               <Chip label="Entradas" value={income} tone="mint" />
               <Chip label="Saídas" value={-expense} tone="danger" />
               <Chip label="Poupado" plain={hasIncome ? `${Math.round(savingsRate * 100)}%` : "—"} />
@@ -155,7 +160,7 @@ export function DashboardReal({ accounts, transactions, connections, categories 
         {/* Patrimônio */}
         <BentoCard span="lg:col-span-2" title="Patrimônio total"
           action={<Badge tone={patrimonioDelta >= 0 ? "positive" : "danger"}><ArrowUpRight size={12} /> {patrimonioDelta.toFixed(1)}%</Badge>}>
-          <Money value={patrimonio} className="text-3xl font-bold" />
+          <Money value={patrimonio} countUp className="text-3xl font-bold" />
           <div className="h-14 -mx-1 mt-3">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={nwSeries}>
@@ -167,7 +172,7 @@ export function DashboardReal({ accounts, transactions, connections, categories 
               </AreaChart>
             </ResponsiveContainer>
           </div>
-          <p className="text-[11px] text-muted mt-1">Ativos {brl(ativos)} · Dívidas {brl(dividas)}</p>
+          <p className="text-[11px] text-muted mt-1">Ativos {brl(nw.assets)} · Dívidas {brl(nw.debts)} (cartões {brl(nw.cards)} + empréstimos {brl(nw.loans)})</p>
         </BentoCard>
 
         {/* Fatura */}
@@ -257,7 +262,7 @@ export function DashboardReal({ accounts, transactions, connections, categories 
         </BentoCard>
 
         {/* Categorias */}
-        <BentoCard span="lg:col-span-4" title="Gastos por categoria" action={<Link href="/categories" className="text-[var(--accent)] text-xs font-semibold flex items-center gap-1">Ver <ArrowRight size={12} /></Link>}>
+        <BentoCard span="lg:col-span-4" title="Gastos por categoria" action={<Link href="/categories" className="text-[var(--accent)] text-xs font-semibold inline-flex items-center gap-1 min-h-[44px] -my-3 px-2 -mx-2">Ver todas <ArrowRight size={12} /></Link>}>
           {topCats.length === 0 ? (
             <p className="text-sm text-muted py-6 text-center">Sem gastos neste mês ainda.</p>
           ) : (
@@ -278,15 +283,15 @@ export function DashboardReal({ accounts, transactions, connections, categories 
         </BentoCard>
 
         {/* Recentes */}
-        <BentoCard span="lg:col-span-2" title="Recentes" action={<Link href="/transactions" className="text-[var(--accent)] text-xs font-semibold">Ver →</Link>}>
+        <BentoCard span="lg:col-span-2" title="Recentes" action={<Link href="/transactions" className="text-[var(--accent)] text-xs font-semibold inline-flex items-center gap-1 min-h-[44px] -my-3 px-2 -mx-2">Ver todas <ArrowRight size={12} /></Link>}>
           {recent.length === 0 ? (
             <p className="text-sm text-muted py-6 text-center">Nenhuma transação neste mês.</p>
           ) : (
-            <div className="divide-y divide-[var(--border)]">
+            <AnimatedList className="divide-y divide-[var(--border)]">
               {recent.map((t) => {
                 const emoji = t.category_id ? emojiById.get(t.category_id) : null;
                 return (
-                  <div key={t.id} className="flex items-center gap-3 py-2.5 first:pt-0 last:pb-0">
+                  <div key={t.id} className="flex items-center gap-3 py-2.5 first:pt-0 last:pb-0 rounded-md">
                     <span className="grid place-items-center h-9 w-9 rounded-lg text-base bg-[var(--card-2)] text-muted shrink-0">{emoji || <Wallet size={15} />}</span>
                     <div className="min-w-0">
                       <div className="text-sm font-semibold truncate">{t.description || "—"}</div>
@@ -296,14 +301,14 @@ export function DashboardReal({ accounts, transactions, connections, categories 
                   </div>
                 );
               })}
-            </div>
+            </AnimatedList>
           )}
         </BentoCard>
 
         {/* Insight */}
         <Link href="/transactions" className="lg:col-span-6 card card-peach p-5 animate-fade-up relative overflow-hidden">
           <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] opacity-85 mb-3">
-            <Sparkles size={14} /> Insight
+            <Sparkles size={14} /> <ShinyText>Insight</ShinyText>
           </div>
           <p className="text-sm leading-relaxed max-w-2xl">
             {topCats.length > 0
@@ -342,8 +347,8 @@ function HealthRing({ score, tone }: { score: number | null; tone: string }) {
 function Chip({ label, value, tone, plain }: { label: string; value?: number; tone?: "mint" | "danger"; plain?: string }) {
   const color = tone === "mint" ? "text-[var(--mint)]" : tone === "danger" ? "text-danger" : "";
   return (
-    <div className="rounded-xl bg-[var(--card-2)] px-3 py-2.5">
-      <div className="text-[11px] text-muted">{label}</div>
+    <div className="rounded-xl bg-[var(--card-2)] px-3 py-2.5 flex sm:block items-center justify-between gap-3">
+      <div className="text-xs text-muted">{label}</div>
       {plain !== undefined
         ? <div className="text-lg font-bold num mt-0.5">{plain}</div>
         : <Money value={value ?? 0} className={`text-lg font-bold mt-0.5 ${color}`} />}

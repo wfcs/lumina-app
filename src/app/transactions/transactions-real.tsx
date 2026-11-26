@@ -1,4 +1,5 @@
 "use client";
+import { AnimatedList } from "@/components/fx/animated-list";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/ui/page-header";
@@ -91,7 +92,7 @@ export function TransactionsReal({ transactions, categories }: { transactions: D
                 <th className="text-right font-medium p-3">Valor</th>
               </tr>
             </thead>
-            <tbody>
+            <AnimatedList as="tbody">
               {rows.length === 0 && <tr><td colSpan={4} className="p-6 text-center text-muted">Nenhuma transação para este filtro.</td></tr>}
               {rows.map((t) => (
                 <tr key={t.id} className="border-b border-[var(--border)] last:border-0 hover:bg-white/[0.02]">
@@ -120,7 +121,7 @@ export function TransactionsReal({ transactions, categories }: { transactions: D
                   <td className="p-3 text-right"><Money value={t.amount} colorize className="font-semibold" /></td>
                 </tr>
               ))}
-            </tbody>
+            </AnimatedList>
           </table>
         </div>
         <div className="flex flex-wrap gap-4 justify-between items-center p-3 border-t border-[var(--border)] text-sm">

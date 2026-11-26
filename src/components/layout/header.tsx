@@ -39,7 +39,7 @@ export function Header() {
 
   return (
     <header className="h-[72px] sticky top-0 z-20 flex items-center gap-3 px-4 md:px-8 border-b border-[var(--border)] bg-[var(--bg)]/70 backdrop-blur-xl">
-      <button className="md:hidden text-muted" onClick={() => setMobileNav(true)}><Menu size={20} /></button>
+      <button className="md:hidden text-muted grid place-items-center h-11 w-11 -ml-2 rounded-xl" aria-label="Abrir menu" onClick={() => setMobileNav(true)}><Menu size={20} /></button>
 
       <div className="hidden sm:flex items-center gap-2 px-3 h-9 rounded-xl border border-[var(--border)] bg-[var(--card)] text-muted text-sm w-64">
         <Search size={15} /><span className="text-xs">Buscar transações, contas…</span>
@@ -72,8 +72,8 @@ export function Header() {
 
 function IconBtn({ children, title, onClick }: { children: React.ReactNode; title: string; onClick?: () => void }) {
   return (
-    <button onClick={onClick} title={title}
-      className="relative grid place-items-center h-9 w-9 rounded-xl border border-[var(--border)] bg-[var(--card)] text-muted hover:text-[var(--text)] hover:border-[var(--accent)]/40 transition-colors">
+    <button onClick={onClick} title={title} aria-label={title}
+      className="relative grid place-items-center h-11 w-11 md:h-9 md:w-9 rounded-xl border border-[var(--border)] bg-[var(--card)] text-muted hover:text-[var(--text)] hover:border-[var(--accent)]/40 transition-colors">
       {children}
     </button>
   );

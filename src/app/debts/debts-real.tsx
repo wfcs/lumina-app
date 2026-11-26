@@ -3,6 +3,9 @@ import { Card } from "@/components/ui/card";
 import { useUI } from "@/lib/store";
 import type { DebtPlan, RankItem } from "@/lib/debt-plan";
 import { CARD_ALERT } from "@/lib/debt-plan";
+import { loanLabel } from "@/lib/labels";
+import { CountUp } from "@/components/fx/count-up";
+import { BorderGlow } from "@/components/fx/border-glow";
 import { Info } from "lucide-react";
 
 // Formatos pt-BR (biblioteca visual, com desvio aprovado: 1 casa na casa do mil).
@@ -12,20 +15,17 @@ const kpi = (v: number) => (Math.abs(v) >= 10_000 ? `R$ ${nf(1).format(v / 1000)
 const pct = (v: number, d = 1) => `${nf(d).format(v * 100)}%`;
 const dmy = (iso: string | null) => (iso ? iso.slice(8, 10) + "/" + iso.slice(5, 7) : "—");
 const my = (iso: string | null) => (iso ? iso.slice(5, 7) + "/" + iso.slice(0, 4) : "—");
-// "CREDITO ECONSIGNADO REFIN ITAU …374" → "Consignado Itaú …374" (nome do banco vem em caixa alta).
-const loanLabel = (name: string) => {
-  const suf = /…\d+$/.exec(name)?.[0];
-  const base = name.replace(/…\d+$/, "").trim().toUpperCase();
-  const kind = /CONSIGNADO/.test(base) ? "Consignado" : /PESSOAL/.test(base) ? "Pessoal"
-    : /IMOBILI|HABITA/.test(base) ? "Imobiliário" : /VE[IÍ]CULO|AUTO/.test(base) ? "Veículo" : null;
-  const bank = /ITAU|ITAÚ/.test(base) ? "Itaú" : /NUBANK|NU /.test(base) ? "Nubank" : null;
-  const label = kind ? [kind, bank].filter(Boolean).join(" ") : name.replace(/…\d+$/, "").trim().toLowerCase().replace(/^./, (c) => c.toUpperCase());
-  return suf ? `${label} ${suf}` : label;
-};
+
 
 function useMask() {
   const hide = useUI((s) => s.hideValues);
   return (s: string) => (hide ? "••••" : s);
+}
+
+/** Número grande dos KPIs: conta de 0 até o valor (React Bits · Count Up). */
+function Kpi({ v }: { v: number }) {
+  const hide = useUI((s) => s.hideValues);
+  return <div className="text-2xl font-bold num my-1">{hide ? "••••" : <CountUp to={v} format={kpi} />}</div>;
 }
 
 function Bar({ share, color, track = "var(--card-2)", h = 6 }: { share: number; color: string; track?: string; h?: number }) {
@@ -98,10 +98,10 @@ export function DebtsReal({ plan, asOf, banks }: { plan: DebtPlan; asOf: string 
       </h1>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
-        <Card className="p-4 card-peach"><div className="text-xs text-muted">Total devido</div><div className="text-2xl font-bold num my-1">{mask(kpi(k.totalOwed))}</div><div className="text-xs text-muted">empréstimos {mask(kpi(k.loanBalance))} + faturas {mask(kpi(k.billsToConfirm))}</div></Card>
-        <Card className="p-4"><div className="text-xs text-muted">Juros do mês (est.)</div><div className="text-2xl font-bold num my-1">{mask(kpi(k.monthlyInterest))}</div><div className="text-xs text-muted">custo médio {pct(k.avgRate)} a.m. sobre o saldo</div></Card>
-        <Card className="p-4"><div className="text-xs text-muted">Parcelas do mês (est.)</div><div className="text-2xl font-bold num my-1">{mask(kpi(k.monthlyInstallments))}</div><div className="text-xs text-muted">{plan.activeLoans.length} contrato(s) · último em {my(k.lastDueDate)}</div></Card>
-        <Card className="p-4"><div className="text-xs text-muted">Faturas a confirmar</div><div className="text-2xl font-bold num my-1">{mask(kpi(k.billsToConfirm))}</div>
+        <Card className="p-4 card-peach"><div className="text-xs text-muted">Total devido</div><Kpi v={k.totalOwed} /><div className="text-xs text-muted">empréstimos {mask(kpi(k.loanBalance))} + faturas {mask(kpi(k.billsToConfirm))}</div></Card>
+        <Card className="p-4"><div className="text-xs text-muted">Juros do mês (est.)</div><Kpi v={k.monthlyInterest} /><div className="text-xs text-muted">custo médio {pct(k.avgRate)} a.m. sobre o saldo</div></Card>
+        <Card className="p-4"><div className="text-xs text-muted">Parcelas do mês (est.)</div><Kpi v={k.monthlyInstallments} /><div className="text-xs text-muted">{plan.activeLoans.length} contrato(s) · último em {my(k.lastDueDate)}</div></Card>
+        <Card className="p-4"><div className="text-xs text-muted">Faturas a confirmar</div><Kpi v={k.billsToConfirm} />
           <div className="text-xs">{k.billsToConfirmCount > 0 ? <Pill tone="danger">{k.billsToConfirmCount} sem pagamento visível</Pill> : <span className="text-muted">nenhuma pendente</span>}</div></Card>
       </div>
 
@@ -109,7 +109,9 @@ export function DebtsReal({ plan, asOf, banks }: { plan: DebtPlan; asOf: string 
         <Card className="mb-4">
           <div className="font-semibold">Ordem recomendada</div>
           <div className="text-xs text-muted mb-1">O que pagar primeiro?</div>
-          {plan.ranking.map((r, i) => <RankRow key={i} item={r} pos={i + 1} mask={mask} />)}
+          {plan.ranking.map((r, i) => i === 0
+            ? <BorderGlow key={i} className="px-3 -mx-3 my-1"><RankRow item={r} pos={1} mask={mask} /></BorderGlow>
+            : <RankRow key={i} item={r} pos={i + 1} mask={mask} />)}
         </Card>
       )}
 

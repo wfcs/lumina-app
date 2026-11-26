@@ -33,10 +33,11 @@ export function FeedbackWidget() {
       <button
         onClick={() => setOpen(true)}
         title="Enviar feedback"
-        className="fixed bottom-5 right-5 z-30 h-12 px-4 rounded-full flex items-center gap-2 text-white font-semibold text-sm shadow-glow-violet"
+        aria-label="Enviar feedback"
+        className="fixed bottom-5 right-5 z-30 h-12 w-12 sm:w-auto justify-center sm:px-4 rounded-full flex items-center gap-2 text-white font-semibold text-sm shadow-glow-violet"
         style={{ background: "var(--accent)", color: "var(--on-accent)" }}
       >
-        <MessageSquarePlus size={18} /> Feedback
+        <MessageSquarePlus size={18} /> <span className="hidden sm:inline">Feedback</span>
       </button>
 
       <AnimatePresence>

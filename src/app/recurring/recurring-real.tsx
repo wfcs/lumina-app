@@ -78,9 +78,9 @@ export function RecurringReal({ transactions, categories }: { transactions: DbTr
       <PageHeader title="Recorrentes" subtitle="Detectadas automaticamente nas suas transações reais" />
 
       <div className="grid sm:grid-cols-3 gap-3 mb-5">
-        <Card><CardTitle>Despesas recorrentes</CardTitle><div className="flex items-center gap-2"><TrendingDown size={18} className="text-danger" /><Money value={-monthlyExpense} className="text-2xl font-bold" /></div><p className="text-xs text-muted mt-1">{expense.length} detectadas · estimativa/mês</p></Card>
-        <Card><CardTitle>Receitas recorrentes</CardTitle><div className="flex items-center gap-2"><TrendingUp size={18} className="text-[var(--mint)]" /><Money value={monthlyIncome} className="text-2xl font-bold" /></div><p className="text-xs text-muted mt-1">{income.length} detectadas · estimativa/mês</p></Card>
-        <Card><CardTitle>Sobra estimada</CardTitle><Money value={monthlyIncome - monthlyExpense} colorize className="text-2xl font-bold" /><p className="text-xs text-muted mt-1">receita − despesa recorrente</p></Card>
+        <Card><CardTitle>Despesas recorrentes</CardTitle><div className="flex items-center gap-2"><TrendingDown size={18} className="text-danger" /><Money value={-monthlyExpense} countUp className="text-2xl font-bold" /></div><p className="text-xs text-muted mt-1">{expense.length} detectadas · estimativa/mês</p></Card>
+        <Card><CardTitle>Receitas recorrentes</CardTitle><div className="flex items-center gap-2"><TrendingUp size={18} className="text-[var(--mint)]" /><Money value={monthlyIncome} countUp className="text-2xl font-bold" /></div><p className="text-xs text-muted mt-1">{income.length} detectadas · estimativa/mês</p></Card>
+        <Card><CardTitle>Sobra estimada</CardTitle><Money value={monthlyIncome - monthlyExpense} colorize countUp className="text-2xl font-bold" /><p className="text-xs text-muted mt-1">receita − despesa recorrente</p></Card>
       </div>
 
       <div className="inline-flex rounded-lg border border-[var(--border)] p-0.5 mb-4">

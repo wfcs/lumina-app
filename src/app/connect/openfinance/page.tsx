@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ShieldCheck, AlertCircle, Loader2, ExternalLink, ArrowLeft } from "lucide-react";
 import { LuminaMark } from "@/components/ui/lumina-mark";
+import { Stepper } from "@/components/fx/stepper";
 
 type Mode = "loading" | "ready" | "notconfigured" | "error";
 
@@ -12,6 +13,7 @@ export default function OpenFinancePage() {
   const [url, setUrl] = useState<string | null>(null);
   const [note, setNote] = useState<string | null>(null);
   const [syncing, setSyncing] = useState(false);
+  const [opened, setOpened] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -49,7 +51,9 @@ export default function OpenFinancePage() {
         <div className="card p-6 text-center">
           <div className="flex justify-center mb-4"><LuminaMark size={48} /></div>
           <h1 className="font-display text-xl font-bold">Conectar via Open Finance</h1>
-          <p className="text-sm text-muted mt-1 mb-6">Autorize no site do seu banco (regulado pelo BACEN). O Lumina só lê — nunca move dinheiro.</p>
+          <p className="text-sm text-muted mt-1 mb-5">Autorize no site do seu banco (regulado pelo BACEN). O Lumina só lê — nunca move dinheiro.</p>
+
+          <Stepper steps={["Escolher banco", "Autorizar", "Sincronizar"]} current={syncing ? 2 : opened ? 1 : 0} />
 
           {mode === "loading" && <div className="flex items-center justify-center gap-2 text-sm text-muted py-3"><Loader2 size={16} className="animate-spin" /> Preparando…</div>}
 
@@ -63,7 +67,7 @@ export default function OpenFinancePage() {
           {mode === "ready" && !syncing && (
             <div className="space-y-2.5">
               {url ? (
-                <a href={url} target="_blank" rel="noopener noreferrer"
+                <a href={url} target="_blank" rel="noopener noreferrer" onClick={() => setOpened(true)}
                    className="w-full h-12 rounded-xl font-semibold text-white flex items-center justify-center gap-2" style={{ background: "var(--accent)", color: "var(--on-accent)" }}>
                   Conectar banco <ExternalLink size={16} />
                 </a>

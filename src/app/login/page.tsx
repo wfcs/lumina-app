@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import SoftAurora from "@/components/fx/SoftAurora";
 import { LuminaMark } from "@/components/ui/lumina-mark";
 
 type Provider = "google" | "azure" | "discord";
@@ -29,8 +30,9 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen grid place-items-center px-4 relative overflow-hidden">
-      <div className="orb h-80 w-80 -top-10 -left-10" style={{ background: "radial-gradient(circle, #00D2FF, transparent 70%)" }} />
-      <div className="orb h-72 w-72 bottom-0 right-0 animate-float" style={{ background: "radial-gradient(circle, #FFD2B3, transparent 70%)" }} />
+      {/* React Bits · Soft Aurora: fundo animado em ciano e pêssego, só nesta tela. */}
+      <SoftAurora className="absolute inset-0 pointer-events-none" color1="#00D2FF" color2="#FFD2B3"
+        speed={0.35} brightness={0.7} opacity={0.55} enableMouseInteraction={false} clickPulse={false} />
 
       <div className="relative w-full max-w-sm">
         <div className="flex items-center gap-3 mb-8 justify-center">

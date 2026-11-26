@@ -71,6 +71,8 @@ body::before {
 .card.card-peach { background: var(--peach); border-color: transparent; color: var(--on-peach); }
 .card-peach .text-muted { color: var(--on-peach-muted); }
 
+.card, .grid > * { min-width: 0; } /* item de grid não estoura a coluna no celular */
+
 .hairline { border: 1px solid var(--border); }
 .text-muted { color: var(--muted); }
 
@@ -87,3 +89,40 @@ body::before {
 ::-webkit-scrollbar-thumb { background: #312A66; border-radius: 9999px; }
 ::-webkit-scrollbar-track { background: transparent; }
 .light ::-webkit-scrollbar-thumb { background: #EBCFB9; }
+
+/* ── Componentes adaptados do React Bits (src/components/fx) ── */
+/* Spotlight Card: luz ciano segue o ponteiro em cartões clicáveis. */
+a.card, .card.spotlight { isolation: isolate; transition: transform .2s ease, border-color .2s ease; }
+a.card::after, .card.spotlight::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: -1;
+  opacity: 0; transition: opacity .25s ease;
+  background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--accent) 14%, transparent), transparent 70%);
+}
+a.card:hover::after, .card.spotlight:hover::after { opacity: 1; }
+a.card:hover, .card.spotlight:hover { border-color: color-mix(in srgb, var(--accent) 35%, var(--border)); }
+a.card:hover { transform: translateY(-2px); }
+
+/* Shiny Text: brilho atravessa o texto a cada 3 s. */
+.shiny-text {
+  background: linear-gradient(110deg, currentColor 40%, color-mix(in srgb, currentColor 35%, #fff) 50%, currentColor 60%);
+  background-size: 250% 100%; -webkit-background-clip: text; background-clip: text; color: inherit;
+  -webkit-text-fill-color: transparent; animation: shiny 3s linear infinite;
+}
+@keyframes shiny { from { background-position: 125% 0; } to { background-position: -125% 0; } }
+
+/* Border Glow: borda com luz girando, ciano → pêssego. */
+@property --bg-angle { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+.border-glow { position: relative; border-radius: 14px; }
+.border-glow::before {
+  content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px; pointer-events: none;
+  background: conic-gradient(from var(--bg-angle), transparent 0 55%, var(--accent) 70%, var(--peach) 80%, transparent 95%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude; animation: bg-spin 4s linear infinite;
+}
+@keyframes bg-spin { to { --bg-angle: 360deg; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .shiny-text { animation: none; -webkit-text-fill-color: currentColor; background: none; }
+  .border-glow::before { animation: none; background: linear-gradient(90deg, var(--accent), var(--peach)); }
+  a.card:hover { transform: none; }
+}

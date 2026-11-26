@@ -40,9 +40,9 @@ export function Sidebar() {
 <LuminaMark size={38} />
           <div className="leading-none">
             <div className="font-display font-bold text-lg tracking-tight">Lumina</div>
-            <div className="text-[10px] uppercase tracking-[0.2em] text-muted mt-1">Clareza</div>
+            <div className="text-[11px] uppercase tracking-[0.2em] text-muted mt-1">Clareza</div>
           </div>
-          <button className="ml-auto md:hidden text-muted" onClick={() => setMobileNav(false)}><X size={18} /></button>
+          <button className="ml-auto md:hidden text-muted grid place-items-center h-11 w-11 -mr-2 rounded-xl" aria-label="Fechar menu" onClick={() => setMobileNav(false)}><X size={18} /></button>
         </div>
 
         <nav className="flex-1 px-3 py-2 space-y-0.5 overflow-y-auto">

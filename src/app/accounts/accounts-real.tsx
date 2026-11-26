@@ -1,4 +1,5 @@
 "use client";
+import { accountTypeLabel } from "@/lib/labels";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardTitle } from "@/components/ui/card";
@@ -85,7 +86,7 @@ export function AccountsReal({ accounts, connections }: { accounts: DbAccount[];
               <div key={b.id} className="rounded-xl border border-[var(--border)] bg-[var(--card-2)] p-4">
                 <div className="flex items-center gap-2 mb-2"><Logo url={connById.get(b.connection_id)?.institution_image ?? null} /><span className="text-sm font-semibold truncate">{b.name ?? "Conta"}</span></div>
                 <Money value={b.balance} className="text-lg font-bold" />
-                <p className="text-xs text-muted mt-1">{b.subtype ?? b.type ?? ""}</p>
+                <p className="text-xs text-muted mt-1">{accountTypeLabel(b.subtype, b.type)}</p>
               </div>
             ))}
           </div>
